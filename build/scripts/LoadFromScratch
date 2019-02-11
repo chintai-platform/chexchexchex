@@ -1,0 +1,4 @@
+#!/bin/bash
+./BootBios test chintailease
+./IssueTokensToUsers && echo "Tokens issued to phillhamnett"
+./SetContract from_load_script

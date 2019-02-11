@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ -z "$1" ];
+then
+  cleos set contract chexchexchex ../chex
+else
+  cleos set contract chexchexchex ../../chex
+fi

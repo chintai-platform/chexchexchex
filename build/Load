@@ -1,0 +1,3 @@
+cd scripts;
+./LoadFromScratch
+#../../tests/Local/Init

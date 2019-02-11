@@ -1,0 +1,8 @@
+#!/bin/bash
+
+./internal/create_wallet.sh
+./internal/setup_system_contracts.sh
+./internal/setup_user_accounts.sh
+./internal/setup_chintai_contracts.sh
+./internal/setup_block_producers.sh
+./internal/create_alt_tokens.sh
