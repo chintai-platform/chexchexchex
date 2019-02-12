@@ -111,7 +111,7 @@ namespace chintai
 
     require_auth( owner );
     eosio::check( quantity.is_valid(), "invalid quantity" );
-    eosio::check( quantity.amount > 0, "must retire positive quantity" );
+    eosio::check( quantity.amount > 0, "must burn positive quantity" );
 
     eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
 
