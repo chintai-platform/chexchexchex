@@ -65,9 +65,11 @@ namespace chintai
          };
 
          struct [[eosio::table]] currency_stats {
-            eosio::asset    supply;
-            eosio::asset    max_supply;
-            eosio::name     issuer;
+            eosio::asset                   supply;
+            eosio::asset                   max_supply;
+            eosio::name                    issuer;
+            eosio::asset                   total_staked;
+            std::vector< eosio::asset >    total_staked_per_level;
 
             uint64_t primary_key()const { return supply.symbol.code().raw(); }
          };

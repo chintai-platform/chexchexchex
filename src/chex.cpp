@@ -25,9 +25,14 @@ namespace chintai
     eosio::check( existing == statstable.end(), "token with symbol already exists" );
 
     statstable.emplace( _self, [&]( auto& s ) {
-        s.supply.symbol = maximum_supply.symbol;
-        s.max_supply    = maximum_supply;
-        s.issuer        = issuer;
+        s.supply.symbol       = maximum_supply.symbol;
+        s.max_supply          = maximum_supply;
+        s.issuer              = issuer;
+        s.total_staked.symbol = maximum_supply.symbol;
+        for(int i = 0; i < 7; ++i)
+        {
+          s.total_staked_per_level.push_back(s.supply);
+        }
         });
   }
 
