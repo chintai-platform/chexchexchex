@@ -6,6 +6,7 @@
 
 #include <eosiolib/asset.hpp>
 #include <eosiolib/eosio.hpp>
+#include <eosiolib/time.hpp>
 
 #include <string>
 
@@ -62,6 +63,20 @@ namespace chintai
             eosio::asset    balance;
 
             uint64_t primary_key()const { return balance.symbol.code().raw(); }
+         };
+
+         struct [[eosio::table]] stake {
+           eosio::time_point      staked_at;
+            eosio::asset    balance;
+
+            uint64_t primary_key()const { return staked_at.sec_since_epoch(); }
+         };
+
+         struct [[eosio::table]] unstake {
+           eosio::time_point      unstaked_at;
+            eosio::asset    balance;
+
+            uint64_t primary_key()const { return unstaked_at.sec_since_epoch(); }
          };
 
          struct [[eosio::table]] currency_stats {

@@ -12,6 +12,34 @@
             ]
         },
         {
+            "name": "stake",
+            "base": "",
+            "fields": [
+                {
+                    "name": "staked_at",
+                    "type": "time_point"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "unstaket",
+            "base": "",
+            "fields": [
+                {
+                    "name": "unstaked_at",
+                    "type": "time_point"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "close",
             "base": "",
             "fields": [
@@ -54,6 +82,14 @@
                 {
                     "name": "issuer",
                     "type": "name"
+                },
+                {
+                    "name": "total_staked",
+                    "type": "asset"
+                },
+                {
+                    "name": "total_staked_per_level",
+                    "type": "asset[]"
                 }
             ]
         },
@@ -190,6 +226,20 @@
         {
             "name": "accounts",
             "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stake",
+            "type": "stake",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "unstake",
+            "type": "unstake",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
