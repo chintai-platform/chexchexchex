@@ -100,6 +100,7 @@ namespace chintai
   */
   void token::burn( eosio::name owner, eosio::asset quantity, string memo )
   {
+    eosio::print("Entering burn\n");
     auto sym = quantity.symbol;
     eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
     eosio::check( memo.size() <= 256, "memo has more than 256 bytes" );
@@ -120,6 +121,7 @@ namespace chintai
         });
 
     sub_balance( owner, quantity );
+    eosio::print("Leaving burn\n");
   }
 
   /*!
@@ -155,6 +157,7 @@ namespace chintai
     Subtract token balance from an account
   */
   void token::sub_balance( eosio::name owner, eosio::asset value ) {
+    eosio::print("Entering sub_balance\n");
     accounts from_acnts( _self, owner.value );
 
     const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
@@ -162,6 +165,7 @@ namespace chintai
 
     from_acnts.modify( from, owner, [&]( auto& a ) {
         a.balance -= value;
+        eosio::print("Subtracted balance, new balance is ", a.balance, "\n");
         });
   }
 
@@ -179,6 +183,7 @@ namespace chintai
     } else {
       to_acnts.modify( to, eosio::same_payer, [&]( auto& a ) {
           a.balance += value;
+        eosio::print("Adding balance, new balance is ", a.balance, "\n");
           });
     }
   }
@@ -220,4 +225,4 @@ namespace chintai
 
 } 
 
-EOSIO_DISPATCH( chintai::token , (create)(issue)(transfer)(open)(close)(retire) )
+EOSIO_DISPATCH( chintai::token , (create)(issue)(transfer)(open)(close)(retire)(burn) )
