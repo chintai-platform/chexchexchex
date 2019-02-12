@@ -105,7 +105,6 @@ namespace chintai
   */
   void token::burn( eosio::name owner, eosio::asset quantity, string memo )
   {
-    eosio::print("Entering burn\n");
     auto sym = quantity.symbol;
     eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
     eosio::check( memo.size() <= 256, "memo has more than 256 bytes" );
@@ -127,7 +126,6 @@ namespace chintai
         });
 
     sub_balance( owner, quantity );
-    eosio::print("Leaving burn\n");
   }
 
   /*!
@@ -160,10 +158,27 @@ namespace chintai
   }
 
   /*!
+    Stake tokens
+  */
+  void token::stake( eosio::name owner, eosio::asset quantity)
+  {
+    eosio::check( quantity.is_valid(), "invalid quantity" );
+    eosio::check( quantity.amount > 0, "must transfer positive quantity" );
+    eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+    stats statstable( _self, sym.raw() );
+    const auto& st = statstable.get( sym.raw() );
+    accounts from_acnts( _self, owner.value );
+    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
+    staked_table _staked_table(_self, owner.value);
+    const auto& stake_bal = 
+    eosio::check( from.balance.amount >= quantity.amount, "overdrawn balance" );
+    
+  }
+
+  /*!
     Subtract token balance from an account
   */
   void token::sub_balance( eosio::name owner, eosio::asset value ) {
-    eosio::print("Entering sub_balance\n");
     accounts from_acnts( _self, owner.value );
 
     const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
@@ -171,7 +186,6 @@ namespace chintai
 
     from_acnts.modify( from, owner, [&]( auto& a ) {
         a.balance -= value;
-        eosio::print("Subtracted balance, new balance is ", a.balance, "\n");
         });
   }
 
@@ -189,7 +203,6 @@ namespace chintai
     } else {
       to_acnts.modify( to, eosio::same_payer, [&]( auto& a ) {
           a.balance += value;
-        eosio::print("Adding balance, new balance is ", a.balance, "\n");
           });
     }
   }
@@ -231,4 +244,4 @@ namespace chintai
 
 } 
 
-EOSIO_DISPATCH( chintai::token , (create)(issue)(transfer)(open)(close)(retire)(burn) )
+EOSIO_DISPATCH( chintai::token , (create)(issue)(transfer)(open)(close)(retire)(burn)(stake)(unstake) )

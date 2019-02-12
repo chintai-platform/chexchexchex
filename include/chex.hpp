@@ -33,6 +33,12 @@ namespace chintai
          void burn( eosio::name owner, eosio::asset quantity, string memo );
 
          [[eosio::action]]
+         void stake( eosio::name owner, eosio::asset quantity );
+
+         [[eosio::action]]
+         void unstake( eosio::name owner, eosio::asset quantity );
+
+         [[eosio::action]]
          void transfer( eosio::name    from,
                         eosio::name    to,
                         eosio::asset   quantity,
@@ -65,14 +71,14 @@ namespace chintai
             uint64_t primary_key()const { return balance.symbol.code().raw(); }
          };
 
-         struct [[eosio::table]] stake {
+         struct [[eosio::table]] staked {
            eosio::time_point      staked_at;
             eosio::asset    balance;
 
             uint64_t primary_key()const { return staked_at.sec_since_epoch(); }
          };
 
-         struct [[eosio::table]] unstake {
+         struct [[eosio::table]] unstaked {
            eosio::time_point      unstaked_at;
             eosio::asset    balance;
 
@@ -91,6 +97,8 @@ namespace chintai
 
          typedef eosio::multi_index< "accounts"_n, account > accounts;
          typedef eosio::multi_index< "stat"_n, currency_stats > stats;
+         typedef eosio::multi_index< "staked"_n, staked> staked_table;
+         typedef eosio::multi_index< "unstaked"_n, usntaked > unstaked_table;
 
          void sub_balance( eosio::name owner, eosio::asset value );
          void add_balance( eosio::name owner, eosio::asset value, eosio::name ram_payer );

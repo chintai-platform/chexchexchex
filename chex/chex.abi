@@ -12,7 +12,7 @@
             ]
         },
         {
-            "name": "stake",
+            "name": "staked",
             "base": "",
             "fields": [
                 {
@@ -26,7 +26,7 @@
             ]
         },
         {
-            "name": "unstaket",
+            "name": "unstaked",
             "base": "",
             "fields": [
                 {
@@ -231,15 +231,15 @@
             "key_types": []
         },
         {
-            "name": "stake",
-            "type": "stake",
+            "name": "staked",
+            "type": "staked",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "unstake",
-            "type": "unstake",
+            "name": "unstaked",
+            "type": "unstaked",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
