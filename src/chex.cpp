@@ -118,6 +118,7 @@ namespace chintai
 
     statstable.modify( st, eosio::same_payer, [&]( auto& s ) {
         s.supply -= quantity;
+        s.max_supply -= quantity;
         });
 
     sub_balance( owner, quantity );
