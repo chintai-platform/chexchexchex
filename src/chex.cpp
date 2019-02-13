@@ -162,15 +162,17 @@ namespace chintai
   */
   void token::stake( eosio::name owner, eosio::asset quantity)
   {
+    auto sym = quantity.symbol;
+    eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
+    stats statstable( _self, sym.raw() );
+    const auto& st = statstable.get( sym.raw() );
     eosio::check( quantity.is_valid(), "invalid quantity" );
     eosio::check( quantity.amount > 0, "must transfer positive quantity" );
     eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-    stats statstable( _self, sym.raw() );
-    const auto& st = statstable.get( sym.raw() );
     accounts from_acnts( _self, owner.value );
-    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
+    const auto& from = from_acnts.get( quantity.symbol.code().raw(), "no balance object found" );
     staked_table _staked_table(_self, owner.value);
-    const auto& stake_bal = 
+    //const auto& stake_bal = 
     eosio::check( from.balance.amount >= quantity.amount, "overdrawn balance" );
     
   }
