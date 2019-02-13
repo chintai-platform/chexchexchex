@@ -98,7 +98,7 @@ namespace chintai
          typedef eosio::multi_index< "accounts"_n, account > accounts;
          typedef eosio::multi_index< "stat"_n, currency_stats > stats;
          typedef eosio::multi_index< "staked"_n, staked> staked_table;
-         typedef eosio::multi_index< "unstaked"_n, usntaked > unstaked_table;
+         typedef eosio::multi_index< "unstaked"_n, unstaked > unstaked_table;
 
          void sub_balance( eosio::name owner, eosio::asset value );
          void add_balance( eosio::name owner, eosio::asset value, eosio::name ram_payer );
