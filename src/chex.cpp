@@ -172,9 +172,33 @@ namespace chintai
     accounts from_acnts( _self, owner.value );
     const auto& from = from_acnts.get( quantity.symbol.code().raw(), "no balance object found" );
     staked_table _staked_table(_self, owner.value);
-    //const auto& stake_bal = 
     eosio::check( from.balance.amount >= quantity.amount, "overdrawn balance" );
-    
+    from_acnts.modify(from_acnts.find(quantity.symbol.code().raw()), eosio::same_payer, [&](auto & entry){
+        entry.balance -= quantity;
+        entry.staked += quantity;
+        });
+  }
+
+  /*!
+    Unstake tokens
+  */
+  void token::unstake( eosio::name owner, eosio::asset quantity)
+  {
+    auto sym = quantity.symbol;
+    eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
+    stats statstable( _self, sym.raw() );
+    const auto& st = statstable.get( sym.raw() );
+    eosio::check( quantity.is_valid(), "invalid quantity" );
+    eosio::check( quantity.amount > 0, "must transfer positive quantity" );
+    eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+    accounts from_acnts( _self, owner.value );
+    const auto& from = from_acnts.get( quantity.symbol.code().raw(), "no balance object found" );
+    staked_table _staked_table(_self, owner.value);
+    eosio::check( from.staked.amount >= quantity.amount, "Can't unstake more than is staked" );
+    from_acnts.modify(from_acnts.find(quantity.symbol.code().raw()), eosio::same_payer, [&](auto & entry){
+        entry.staked -= quantity;
+        entry.unstaking += quantity;
+        });
   }
 
   /*!

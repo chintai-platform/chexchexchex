@@ -8,6 +8,14 @@
                 {
                     "name": "balance",
                     "type": "asset"
+                },
+                {
+                    "name": "staked",
+                    "type": "asset"
+                },
+                {
+                    "name": "unstaking",
+                    "type": "asset"
                 }
             ]
         },

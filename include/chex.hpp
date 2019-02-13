@@ -67,6 +67,8 @@ namespace chintai
       private:
          struct [[eosio::table]] account {
             eosio::asset    balance;
+            eosio::asset    staked;
+            eosio::asset    unstaking;
 
             uint64_t primary_key()const { return balance.symbol.code().raw(); }
          };
@@ -80,7 +82,7 @@ namespace chintai
 
          struct [[eosio::table]] unstaked {
            eosio::time_point      unstaked_at;
-            eosio::asset    balance;
+           eosio::asset    balance;
 
             uint64_t primary_key()const { return unstaked_at.sec_since_epoch(); }
          };
