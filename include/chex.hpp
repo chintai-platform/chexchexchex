@@ -76,13 +76,14 @@ namespace chintai
          struct [[eosio::table]] staked {
            eosio::time_point      staked_at;
             eosio::asset    balance;
-
+            staked() : staked_at(eosio::microseconds(0)), balance(0, eosio::symbol("EOS",4)) {}
             uint64_t primary_key()const { return staked_at.sec_since_epoch(); }
          };
 
          struct [[eosio::table]] unstaked {
            eosio::time_point      unstaked_at;
            eosio::asset    balance;
+            unstaked() : unstaked_at(eosio::microseconds(0)), balance(0, eosio::symbol("EOS",4)) {}
 
             uint64_t primary_key()const { return unstaked_at.sec_since_epoch(); }
          };

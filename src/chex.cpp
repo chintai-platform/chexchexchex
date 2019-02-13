@@ -164,18 +164,25 @@ namespace chintai
   {
     auto sym = quantity.symbol;
     eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
+
     stats statstable( _self, sym.raw() );
     const auto& st = statstable.get( sym.raw() );
+
     eosio::check( quantity.is_valid(), "invalid quantity" );
     eosio::check( quantity.amount > 0, "must transfer positive quantity" );
     eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
     accounts from_acnts( _self, owner.value );
     const auto& from = from_acnts.get( quantity.symbol.code().raw(), "no balance object found" );
-    staked_table _staked_table(_self, owner.value);
     eosio::check( from.balance.amount >= quantity.amount, "overdrawn balance" );
     from_acnts.modify(from_acnts.find(quantity.symbol.code().raw()), eosio::same_payer, [&](auto & entry){
         entry.balance -= quantity;
         entry.staked += quantity;
+        });
+
+    staked_table _staked_table(_self, owner.value);
+    _staked_table.emplace(owner, [&](auto & entry){
+         entry.balance = quantity;
         });
   }
 
@@ -188,17 +195,42 @@ namespace chintai
     eosio::check( sym.is_valid(), "invalid symbol eosio::name" );
     stats statstable( _self, sym.raw() );
     const auto& st = statstable.get( sym.raw() );
+
     eosio::check( quantity.is_valid(), "invalid quantity" );
     eosio::check( quantity.amount > 0, "must transfer positive quantity" );
     eosio::check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
     accounts from_acnts( _self, owner.value );
     const auto& from = from_acnts.get( quantity.symbol.code().raw(), "no balance object found" );
-    staked_table _staked_table(_self, owner.value);
     eosio::check( from.staked.amount >= quantity.amount, "Can't unstake more than is staked" );
     from_acnts.modify(from_acnts.find(quantity.symbol.code().raw()), eosio::same_payer, [&](auto & entry){
         entry.staked -= quantity;
         entry.unstaking += quantity;
         });
+
+    unstaked_table _unstaked_table(_self, owner.value);
+    _unstaked_table.emplace(owner, [&](auto & entry){
+         entry.balance = quantity;
+        });
+
+    staked_table _staked_table(_self, owner.value);
+    bool finished(false);
+    while(_staked_table.begin() != _staked_table.end() && !finished)
+    {
+      auto i = _staked_table.rbegin();
+      if(i->balance < quantity)
+      {
+        quantity -= i->balance;
+        _staked_table.erase(_staked_table.find(i->primary_key()));
+      }
+      else
+      {
+        _staked_table.modify(_staked_table.find(i->primary_key()), owner, [&](auto & entry){
+            entry.balance -= quantity;
+            });
+        finished = true;
+      }
+    }
   }
 
   /*!
