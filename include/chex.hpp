@@ -69,23 +69,26 @@ namespace chintai
             eosio::asset    balance;
             eosio::asset    staked;
             eosio::asset    unstaking;
-
+            account() : balance(0, eosio::symbol("CHEX",4)), staked(0, eosio::symbol("CHEX",4)), unstaking(0, eosio::symbol("CHEX",4)) {}
             uint64_t primary_key()const { return balance.symbol.code().raw(); }
+            EOSLIB_SERIALIZE( account, (balance)(staked)(unstaking) )
          };
 
          struct [[eosio::table]] staked {
            eosio::time_point      staked_at;
             eosio::asset    balance;
-            staked() : staked_at(eosio::microseconds(0)), balance(0, eosio::symbol("EOS",4)) {}
+            staked() : staked_at(eosio::microseconds(0)), balance(0, eosio::symbol("CHEX",4)) {}
             uint64_t primary_key()const { return staked_at.sec_since_epoch(); }
+            EOSLIB_SERIALIZE( staked, (staked_at)(balance) )
          };
 
          struct [[eosio::table]] unstaked {
            eosio::time_point      unstaked_at;
            eosio::asset    balance;
-            unstaked() : unstaked_at(eosio::microseconds(0)), balance(0, eosio::symbol("EOS",4)) {}
+            unstaked() : unstaked_at(eosio::microseconds(0)), balance(0, eosio::symbol("CHEX",4)) {}
 
             uint64_t primary_key()const { return unstaked_at.sec_since_epoch(); }
+            EOSLIB_SERIALIZE( unstaked, (unstaked_at)(balance) )
          };
 
          struct [[eosio::table]] currency_stats {
@@ -95,7 +98,9 @@ namespace chintai
             eosio::asset                   total_staked;
             std::vector< eosio::asset >    total_staked_per_level;
 
+            currency_stats() : supply(0, eosio::symbol("CHEX",4)), max_supply(0, eosio::symbol("CHEX",4)), issuer("chexchexchex"), total_staked(0, eosio::symbol("CHEX",4)) {eosio::print("Test\n");}
             uint64_t primary_key()const { return supply.symbol.code().raw(); }
+            EOSLIB_SERIALIZE( currency_stats, (supply)(max_supply)(issuer)(total_staked)(total_staked_per_level) )
          };
 
          typedef eosio::multi_index< "accounts"_n, account > accounts;
