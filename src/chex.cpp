@@ -199,6 +199,33 @@ void token::unlock( name owner, asset quantity )
   }
 }
 
+void token::lock2balance( name owner )
+{
+  require_auth(owner);
+  accounts from_acnts( _self, owner.value );
+  locked_funds locked( _self, owner.value );
+  unlocking_funds unlocking( _self, owner.value );
+  
+  auto itr = unlocking.begin();
+  check( itr != unlocking.end(), "No locked CHEX to convert the balance" );
+  while(itr != unlocking.end())
+  {
+    if(itr->unlocked_at > eosio::current_time_point())
+    {
+      ++itr;
+      continue;
+    }
+    auto acnt_itr = from_acnts.find(itr->quantity.symbol.code().raw());
+    check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team" );
+    from_acnts.modify(acnt_itr, same_payer, [&](auto & entry)
+        {
+        entry.locked -= itr->quantity;
+        entry.balance += itr->quantity;
+        });
+  }
+
+}
+
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 

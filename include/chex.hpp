@@ -54,6 +54,9 @@ namespace chex{
          [[eosio::action]]
          void burn( name owner, asset quantity );
 
+         [[eosio::action]]
+         void lock2balance( name owner );
+
          static asset get_supply( name token_contract_account, symbol_code sym_code )
          {
             stats statstable( token_contract_account, sym_code.raw() );
