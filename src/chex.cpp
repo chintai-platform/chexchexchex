@@ -4,6 +4,7 @@
  */
 
 #include "chex.hpp"
+#include <chrono>
 
 using namespace eosio;
 namespace chex{
@@ -192,7 +193,7 @@ void token::unlock( name owner, asset quantity )
     unlocking.emplace(owner, [&](auto & entry)
         {
           entry.id = unlocking.available_primary_key();
-          entry.unlocked_at = time_point(microseconds(current_time() + wait));
+          entry.unlocked_at = time_point(microseconds(eosio::current_time_point().time_since_epoch()._count + 1000000 * wait));
           entry.quantity = unlock_quantity;
         });
   }
