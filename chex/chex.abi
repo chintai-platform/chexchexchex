@@ -1,6 +1,40 @@
 {
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
     "version": "eosio::abi/1.1",
+    "types": [],
     "structs": [
+        {
+            "name": "locked",
+            "base": "",
+            "fields": [
+                {
+                    "name": "lock_time",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "unlocking",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "unlocked_at",
+                    "type": "time_point"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
         {
             "name": "account",
             "base": "",
@@ -10,39 +44,7 @@
                     "type": "asset"
                 },
                 {
-                    "name": "staked",
-                    "type": "asset"
-                },
-                {
-                    "name": "unstaking",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "staked",
-            "base": "",
-            "fields": [
-                {
-                    "name": "staked_at",
-                    "type": "time_point"
-                },
-                {
-                    "name": "balance",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "unstaked",
-            "base": "",
-            "fields": [
-                {
-                    "name": "unstaked_at",
-                    "type": "time_point"
-                },
-                {
-                    "name": "balance",
+                    "name": "locked",
                     "type": "asset"
                 }
             ]
@@ -90,14 +92,6 @@
                 {
                     "name": "issuer",
                     "type": "name"
-                },
-                {
-                    "name": "total_staked",
-                    "type": "asset"
-                },
-                {
-                    "name": "total_staked_per_level",
-                    "type": "asset[]"
                 }
             ]
         },
@@ -152,24 +146,6 @@
             ]
         },
         {
-            "name": "burn",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "quantity",
-                    "type": "asset"
-                },
-                {
-                    "name": "memo",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "transfer",
             "base": "",
             "fields": [
@@ -192,35 +168,52 @@
             ]
         },
         {
-            "name": "stake",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "quantity",
-                    "type": "asset"
-                }
-            ]
+          "name": "lock",
+          "base": "",
+          "fields": [
+          {   
+            "name": "owner",
+            "type": "name"
+          },
+          {   
+            "name": "quantity",
+            "type": "asset"
+          },
+          {   
+            "name": "time",
+            "type": "uint64"
+          }
+          ]
         },
         {
-            "name": "unstake",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "quantity",
-                    "type": "asset"
-                }
-            ]
+          "name": "unlock",
+          "base": "",
+          "fields": [
+          {   
+            "name": "owner",
+            "type": "name"
+          },
+          {   
+            "name": "quantity",
+            "type": "asset"
+          }
+          ]
+        },
+        {
+          "name": "burn",
+          "base": "",
+          "fields": [
+          {   
+            "name": "owner",
+            "type": "name"
+          },
+          {   
+            "name": "quantity",
+            "type": "asset"
+          }
+          ]
         }
     ],
-    "types": [],
     "actions": [
         {
             "name": "close",
@@ -248,23 +241,23 @@
             "ricardian_contract": ""
         },
         {
-            "name": "stake",
-            "type": "stake",
+            "name": "transfer",
+            "type": "transfer",
             "ricardian_contract": ""
-        },
+        }
         {
-            "name": "unstake",
-            "type": "unstake",
+            "name": "lock",
+            "type": "lock",
             "ricardian_contract": ""
-        },
+        }
+        {
+            "name": "unlock",
+            "type": "unlock",
+            "ricardian_contract": ""
+        }
         {
             "name": "burn",
             "type": "burn",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "transfer",
-            "type": "transfer",
             "ricardian_contract": ""
         }
     ],
@@ -277,28 +270,27 @@
             "key_types": []
         },
         {
-            "name": "staked",
-            "type": "staked",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "unstaked",
-            "type": "unstaked",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
             "name": "stat",
             "type": "currency_stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "locked",
+            "type": "locked",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "unlocking",
+            "type": "unlocking",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         }
     ],
     "ricardian_clauses": [],
-    "variants": [],
-    "abi_extensions": []
+    "variants": []
 }
