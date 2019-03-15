@@ -125,6 +125,35 @@ void token::burn( name owner, asset quantity )
       });
 }
 
+void token::lock( name owner, asset quantity, uint64_t time )
+{
+  accounts from_acnts( _self, owner.value );
+  auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
+  check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
+  check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
+  from_acnts.modify(acnt_itr, owner, [&](auto & entry)
+      {
+      entry.locked += quantity;
+      });
+  locked_funds locked( _self, owner.value );
+  auto itr = locked.find(time);
+  if(itr == locked.end())
+  {
+    locked.emplace(owner, [&](auto & entry)
+        {
+        entry.lock_time = time;
+        entry.quantity = quantity;
+        });
+  }
+  else
+  {
+    locked.modify(itr, owner, [&](auto & entry)
+        {
+        entry.quantity += quantity;
+        });
+  }
+}
+
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
