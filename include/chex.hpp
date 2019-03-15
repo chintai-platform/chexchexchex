@@ -6,14 +6,15 @@
 
 #include <eosiolib/asset.hpp>
 #include <eosiolib/eosio.hpp>
+#include <eosiolib/time.hpp>
 
 #include <string>
 
 namespace eosiosystem {
    class system_contract;
 }
-
-namespace eosio {
+using namespace eosio;
+namespace chex{
 
    using std::string;
 

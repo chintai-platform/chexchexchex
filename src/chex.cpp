@@ -3,9 +3,10 @@
  *  @copyright defined in eos/LICENSE.txt
  */
 
-#include <eosio.token/eosio.token.hpp>
+#include "chex.hpp"
 
-namespace eosio {
+using namespace eosio;
+namespace chex{
 
 void token::create( name   issuer,
                     asset  maximum_supply )
@@ -110,6 +111,20 @@ void token::transfer( name    from,
     add_balance( to, quantity, payer );
 }
 
+void token::burn( name owner, asset quantity )
+{
+  accounts from_acnts( _self, owner.value );
+  stats statstable( _self, quantity.symbol.code().raw());
+  sub_balance( owner, quantity );
+  auto currency = statstable.find(quantity.symbol.code().raw());
+  check(currency != statstable.end(), "Invalid token");
+  statstable.modify( currency, same_payer, [&]( auto & entry )
+      {
+        entry.supply -= quantity;
+        entry.max_supply -= quantity;
+      });
+}
+
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
@@ -167,4 +182,4 @@ void token::close( name owner, const symbol& symbol )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn) )
