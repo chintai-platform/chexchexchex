@@ -4,6 +4,7 @@
  */
 
 #include "chex.hpp"
+#include <eosio/transaction.hpp>
 #include <chrono>
 
 using namespace eosio;
@@ -196,10 +197,13 @@ void token::unlock( name owner, asset quantity )
           entry.unlocked_at = time_point(microseconds(eosio::current_time_point().time_since_epoch()._count + 1000000 * wait));
           entry.quantity = unlock_quantity;
         });
+    uint128_t nonce = 0;
+    nonce <<= owner.value;
+    nonce += unlocking.rbegin()->id + eosio::current_time_point().time_since_epoch()._count;
     transaction trx{};
     trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "lock2balance"_n, std::make_tuple(owner));
-    txn.send(0, _self, false);
-
+    trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "nonce"_n, std::make_tuple(nonce));
+    trx.send(nonce, _self, false);
   }
 }
 
@@ -287,6 +291,10 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
+void token::nonce( uint128_t nonce )
+{
+}
+
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(lock2balance) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(lock2balance)(nonce) )
