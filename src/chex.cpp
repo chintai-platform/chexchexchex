@@ -126,6 +126,7 @@ void token::burn( name owner, asset quantity )
       });
 }
 
+/// \todo If locking and there are funds currently unlocking, re-lock them first
 void token::lock( name owner, asset quantity, uint64_t time )
 {
   require_auth(owner);
@@ -133,6 +134,7 @@ void token::lock( name owner, asset quantity, uint64_t time )
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
+  check(time < 60*60*24*100, "You can not lock your tokens for more than 100 days");
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
       entry.locked += quantity;
@@ -156,6 +158,46 @@ void token::lock( name owner, asset quantity, uint64_t time )
   }
 }
 
+void token::unlock( name owner, asset quantity )
+{
+  accounts from_acnts( _self, owner.value );
+  locked_funds locked( _self, owner.value );
+  unlocking_funds unlocking( _self, owner.value );
+
+  auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
+  check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
+  check(acnt_itr->locked >= quantity, "You can not unlock more than is currently locked. The maximum you can unlock is " + acnt_itr->locked.to_string());
+
+  while(quantity.amount > 0)
+  {
+    auto locked_itr = locked.begin();
+    if(locked_itr == locked.end()) break;
+    auto wait = locked_itr->lock_time;
+    asset unlock_quantity;
+    if(locked_itr->quantity < quantity)
+    {
+      unlock_quantity = locked_itr->quantity;
+      quantity -= locked_itr->quantity;
+      locked.erase(locked_itr);
+    }
+    else
+    {
+      unlock_quantity = quantity;
+      locked.modify(locked_itr, same_payer, [&](auto & entry)
+          {
+          entry.quantity -= quantity;
+          });
+      quantity.amount = 0;
+    }
+    unlocking.emplace(owner, [&](auto & entry)
+        {
+          entry.id = unlocking.available_primary_key();
+          entry.unlocked_at = time_point(microseconds(current_time() + wait));
+          entry.quantity = unlock_quantity;
+        });
+  }
+}
+
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
@@ -174,6 +216,8 @@ void token::add_balance( name owner, asset value, name ram_payer )
    if( to == to_acnts.end() ) {
       to_acnts.emplace( ram_payer, [&]( auto& a ){
         a.balance = value;
+        a.locked.amount = 0;
+        a.locked.symbol = value.symbol;
       });
    } else {
       to_acnts.modify( to, same_payer, [&]( auto& a ) {

@@ -1,1 +1,1 @@
-cleos push action chexchexchex issue '["phillhamnett", "100.0000 CHEX", "Issuing CHEX"]' -p chexchexchex
+cleos push action chexchexchex issue '["phillhamnett", "1000.00000000 CHEX", "Issuing CHEX"]' -p chexchexchex

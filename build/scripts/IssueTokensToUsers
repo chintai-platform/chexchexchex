@@ -1,4 +1,2 @@
 cleos push action eosio.token issue '[ "phillhamnett", "10000.0000 EOS", "memo" ]' -p eosio@active
 cleos push action eosio.token issue '[ "mikefletcher", "10000.0000 EOS", "memo" ]' -p eosio@active
-cleos push action phillhamnett issue '[ "phillhamnett", "10000.0000 ABC", "memo" ]' -p phillhamnett@active
-cleos push action phillhamnett issue '[ "phillhamnett", "10000.0000 DEF", "memo" ]' -p phillhamnett@active

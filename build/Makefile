@@ -4,7 +4,7 @@ COMPILER:=eosio-cpp
 SRCDIR:=../src/
 OBJDIR:=obj/
 
-all: ../chex/chex.wasm
+all: ../chex/token.wasm
 
 doxygen:= ../documentation/doxygen/build
 SRC:= $(wildcard ../src/*.cpp) $(wildcard ../tests/*.cpp)
@@ -15,8 +15,8 @@ OBJ:= $(patsubst $(SRCDIR)%.cpp,$(OBJDIR)%.o,$(SRC))
 $(OBJDIR):
 	mkdir -p $@
 
-../chex/chex.wasm: $(SRC) $(INCLUDES)
-	@$(COMPILER) ../src/chex.cpp  -I=../include  -I=$(EOSIO_CONTRACT_DIR)/contracts/eosio.system/include  -I=$(EOSIO_CONTRACT_DIR)/contracts/eosio.token/include  -isystem=$(EOSIO_CDT_DIR)/libraries -I=$(BOOST_DIR)/include/  -o $@ -DCOMPILE_WASM
+../chex/token.wasm: $(SRC) $(INCLUDES)
+	@$(COMPILER) ../src/chex.cpp  -I=../include  -I=$(EOSIO_CONTRACT_DIR)/contracts/eosio.system/include  -I=$(EOSIO_CONTRACT_DIR)/contracts/eosio.token/include  -isystem=$(EOSIO_CDT_DIR)/libraries -I=$(BOOST_DIR)/include/  -o $@ -DCOMPILE_WASM -abigen
 
 documentation: | $(doxygen)
 	cd ../documentation && doxygen Doxyfile

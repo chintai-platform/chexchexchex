@@ -1,1 +1,1 @@
-cleos push action chexchexchex transfer '["phillhamnett","mikefletcher","1.0000 CHEX","memo"]' -p phillhamnett
+cleos push action chexchexchex transfer '["phillhamnett","mikefletcher","1.00000000 CHEX","memo"]' -p phillhamnett
