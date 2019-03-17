@@ -129,25 +129,25 @@ void token::burn( name owner, asset quantity )
 }
 
 /// \todo If locking and there are funds currently unlocking, re-lock them first
-void token::lock( name owner, asset quantity, uint64_t time )
+void token::lock( name owner, asset quantity, uint8_t days )
 {
   require_auth(owner);
   accounts from_acnts( _self, owner.value );
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
-  check(time < 60*60*24*100, "You can not lock your tokens for more than 100 days");
+  check(days <= 100, "You can not lock your tokens for more than 100 days");
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
       entry.locked += quantity;
       });
   locked_funds locked( _self, owner.value );
-  auto itr = locked.find(time);
+  auto itr = locked.find(days);
   if(itr == locked.end())
   {
     locked.emplace(owner, [&](auto & entry)
         {
-        entry.lock_time = time;
+        entry.lock_time = days;
         entry.quantity = quantity;
         });
   }
@@ -194,7 +194,7 @@ void token::unlock( name owner, asset quantity )
     unlocking.emplace(owner, [&](auto & entry)
         {
           entry.id = unlocking.available_primary_key();
-          entry.unlocked_at = time_point(microseconds(eosio::current_time_point().time_since_epoch()._count + 1000000 * wait));
+          entry.unlocked_at = time_point(microseconds(eosio::current_time_point().time_since_epoch()._count + 1000000 * wait*60*60*24));
           entry.quantity = unlock_quantity;
         });
     uint128_t nonce = 0;
@@ -203,7 +203,7 @@ void token::unlock( name owner, asset quantity )
     transaction trx{};
     trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "lock2balance"_n, std::make_tuple(owner));
     trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "nonce"_n, std::make_tuple(nonce));
-    trx.delay_sec = wait + 1;
+    trx.delay_sec = wait*60*60*24 + 1;
     trx.send(nonce, _self, false);
   }
 }

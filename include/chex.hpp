@@ -46,7 +46,7 @@ namespace chex{
          void close( name owner, const symbol& symbol );
 
          [[eosio::action]]
-         void lock( name owner, asset quantity, uint64_t time );
+         void lock( name owner, asset quantity, uint8_t days);
 
          [[eosio::action]]
          void unlock( name owner, asset quantity );
