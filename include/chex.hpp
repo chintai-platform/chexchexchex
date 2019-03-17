@@ -55,10 +55,15 @@ namespace chex{
          void burn( name owner, asset quantity );
 
          [[eosio::action]]
+         void refund( name owner );
+
+         [[eosio::action]]
          void lock2balance( name owner );
 
          [[eosio::action]]
          void nonce( uint128_t nonce );
+
+         void convert_locked_to_balance( name owner );
 
          static asset get_supply( name token_contract_account, symbol_code sym_code )
          {

@@ -93,7 +93,7 @@ void token::transfer( name    from,
                       string  memo )
 {
     check( from != to, "cannot transfer to self" );
-    require_auth( from );
+    eosio::check( has_auth(from) || has_auth(_self) , "You must be either the token owner or the chex contract");
     check( is_account( to ), "to account does not exist");
     auto sym = quantity.symbol.code();
     stats statstable( _self, sym.raw() );
@@ -176,7 +176,7 @@ void token::unlock( name owner, asset quantity )
     if(locked_itr == locked.end()) break;
     auto wait = locked_itr->lock_time;
     asset unlock_quantity;
-    if(locked_itr->quantity < quantity)
+    if(locked_itr->quantity <= quantity)
     {
       unlock_quantity = locked_itr->quantity;
       quantity -= locked_itr->quantity;
@@ -203,13 +203,13 @@ void token::unlock( name owner, asset quantity )
     transaction trx{};
     trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "lock2balance"_n, std::make_tuple(owner));
     trx.actions.emplace_back(eosio::permission_level{_self, "active"_n}, _self, "nonce"_n, std::make_tuple(nonce));
+    trx.delay_sec = wait + 1;
     trx.send(nonce, _self, false);
   }
 }
 
-void token::lock2balance( name owner )
+void token::convert_locked_to_balance( name owner )
 {
-  require_auth(owner);
   accounts from_acnts( _self, owner.value );
   locked_funds locked( _self, owner.value );
   unlocking_funds unlocking( _self, owner.value );
@@ -228,10 +228,21 @@ void token::lock2balance( name owner )
     from_acnts.modify(acnt_itr, same_payer, [&](auto & entry)
         {
         entry.locked -= itr->quantity;
-        entry.balance += itr->quantity;
         });
+    itr = unlocking.erase(itr);
   }
+}
 
+void token::refund( name owner )
+{
+  require_auth(owner);
+  convert_locked_to_balance( owner );
+}
+
+void token::lock2balance( name owner )
+{
+  require_auth(_self);
+  convert_locked_to_balance( owner );
 }
 
 void token::sub_balance( name owner, asset value ) {
@@ -239,6 +250,7 @@ void token::sub_balance( name owner, asset value ) {
 
    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
    check( from.balance.amount >= value.amount, "overdrawn balance" );
+   check( from.balance - from.locked <= value, "You are attempting to transfer " + value.to_string() + ", but you can only transfer " + (from.balance - from.locked).to_string() + ", because " + from.locked.to_string() + " are in the locked state. You can unlock them using the \"unlock\" action" );
 
    from_acnts.modify( from, owner, [&]( auto& a ) {
          a.balance -= value;
@@ -297,4 +309,4 @@ void token::nonce( uint128_t nonce )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(lock2balance)(nonce) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(refund)(lock2balance)(nonce) )
