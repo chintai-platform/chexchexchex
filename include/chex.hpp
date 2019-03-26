@@ -79,32 +79,23 @@ namespace chex{
             return ac.balance;
          }
 
-         //[[eosio::action]]
-         //void deletetable(name owner, asset token)
-         //{
-         //  require_auth(_self);
-         //  accounts from_acnts( _self, owner.value );
-         //  locked_funds locked( _self,  owner.value );
-         //  stats statstable( _self, token.symbol.code().raw() );
-         //  unlocking_funds unlocking( _self, owner.value );
-         //  print("Test 1");
-         //  auto it1 = from_acnts.begin();
-         //  print("Test 2");
-         //  auto it2 = locked.begin();
-         //  print("Test 3");
-         //  auto it3 = statstable.begin();
-         //  print("Test 4");
-         //  auto it4 = unlocking.begin();
-         //  print("Test 5");
-         //  while(it1 != from_acnts.end()) it1 = from_acnts.erase(it1);
-         //  print("Test 6");
-         //  while(it2 != locked.end()) it2 = locked.erase(it2);
-         //  print("Test 7");
-         //  while(it3 != statstable.end()) it3 = statstable.erase(it3);
-         //  print("Test 8");
-         //  while(it4 != unlocking.end()) it4 = unlocking.erase(it4);
-         //  print("Test 9");
-         //}
+         [[eosio::action]]
+         void deletetable(name owner, asset token)
+         {
+           require_auth(_self);
+           accounts from_acnts( _self, owner.value );
+           locked_funds locked( _self,  owner.value );
+           stats statstable( _self, token.symbol.code().raw() );
+           unlocking_funds unlocking( _self, owner.value );
+           auto it1 = from_acnts.begin();
+           auto it2 = locked.begin();
+           auto it3 = statstable.begin();
+           auto it4 = unlocking.begin();
+           while(it1 != from_acnts.end()) it1 = from_acnts.erase(it1);
+           while(it2 != locked.end()) it2 = locked.erase(it2);
+           while(it3 != statstable.end()) it3 = statstable.erase(it3);
+           while(it4 != unlocking.end()) it4 = unlocking.erase(it4);
+         }
 
          using create_action = eosio::action_wrapper<"create"_n, &token::create>;
          using issue_action = eosio::action_wrapper<"issue"_n, &token::issue>;

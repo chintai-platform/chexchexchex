@@ -18,6 +18,20 @@
             ]
         },
         {
+          "name": "deletetable"
+          "base": "",
+          "fields": [
+          {
+          "name":"owner",
+          "type":"name"
+          },
+          {
+          "name":"token",
+          "type":"asset"
+          }
+          ]
+        },
+        {
             "name": "unlocking",
             "base": "",
             "fields": [
@@ -244,21 +258,26 @@
             "name": "transfer",
             "type": "transfer",
             "ricardian_contract": ""
-        }
+        },
         {
             "name": "lock",
             "type": "lock",
             "ricardian_contract": ""
-        }
+        },
         {
             "name": "unlock",
             "type": "unlock",
             "ricardian_contract": ""
-        }
+        },
         {
             "name": "burn",
             "type": "burn",
             "ricardian_contract": ""
+        },
+        {
+        "name":"deletetable",
+        "type":"deletetable",
+        "ricardian_contract":""
         }
     ],
     "tables": [
