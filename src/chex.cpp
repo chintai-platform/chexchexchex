@@ -93,7 +93,7 @@ void token::transfer( name    from,
                       string  memo )
 {
     check( from != to, "cannot transfer to self" );
-    eosio::check( has_auth(from) || has_auth(_self) , "You must be either the token owner or the chex contract");
+    require_auth(from);
     check( is_account( to ), "to account does not exist");
     auto sym = quantity.symbol.code();
     stats statstable( _self, sym.raw() );
@@ -140,6 +140,7 @@ void token::lock( name owner, asset quantity, uint8_t days )
   convert_locked_to_balance( owner );
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock your tokens for more than 100 days");
+  check(days > 0, "You can not lock your tokens for less than 1 day");
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
       entry.locked += quantity;
