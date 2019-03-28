@@ -93,7 +93,7 @@ void token::transfer( name    from,
                       string  memo )
 {
     check( from != to, "cannot transfer to self" );
-    eosio::check( has_auth(from) || has_auth(_self) , "You must be either the token owner or the chex contract");
+    require_auth(from);
     check( is_account( to ), "to account does not exist");
     auto sym = quantity.symbol.code();
     stats statstable( _self, sym.raw() );
