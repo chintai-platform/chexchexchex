@@ -140,6 +140,7 @@ void token::lock( name owner, asset quantity, uint8_t days )
   convert_locked_to_balance( owner );
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock your tokens for more than 100 days");
+  check(days > 0, "You can not lock your tokens for less than 1 day");
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
       entry.locked += quantity;
