@@ -309,4 +309,4 @@ void token::nonce( uint128_t nonce )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(refund)(lock2balance)(nonce) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(refund)(lock2balance)(nonce)(deletetable) )
