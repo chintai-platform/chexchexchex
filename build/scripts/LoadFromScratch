@@ -1,4 +1,0 @@
-#!/bin/bash
-./BootBios test chintailease
-./IssueTokensToUsers
-./SetContract from_load_script

@@ -1,1 +1,0 @@
-cleos wallet unlock --password $(cat ~/default-wallet-key | cut -d '"' -f 2 | cut -d$'\n' -f 4)

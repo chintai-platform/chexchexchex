@@ -1,1 +1,0 @@
-nodeos -e -p eosio --private-key '[ "EOS6bpCbibfKRV4UDGV8yJRnEExMUR4Bjz9dPyxuYWFwj35TW7hks","5JLJHdV3sUEqJN1WGqiDgiagoCM4tPt5Wf2uK5qz1gcPXbGHx3x" ]'  --plugin eosio::chain_api_plugin --plugin eosio::history_api_plugin --contracts-console --verbose-http-errors
