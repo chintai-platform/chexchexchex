@@ -13,6 +13,7 @@
 # How to use
 <h2 class="contract"> create </h2>
 <h3>Parameters</h3>
+
 - __issuer__
 - __maximum_supply__
 
