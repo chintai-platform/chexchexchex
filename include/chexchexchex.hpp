@@ -19,7 +19,7 @@ namespace chex{
 
    using std::string;
 
-   class [[eosio::contract("token")]] token : public contract {
+   class [[eosio::contract("chexchexchex")]] token : public contract {
       public:
          using contract::contract;
 
