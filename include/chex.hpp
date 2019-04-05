@@ -54,15 +54,6 @@ namespace chex{
          [[eosio::action]]
          void burn( name owner, asset quantity );
 
-         [[eosio::action]]
-         void refund( name owner );
-
-         [[eosio::action]]
-         void lock2balance( name owner );
-
-         [[eosio::action]]
-         void nonce( uint128_t nonce );
-
          void convert_locked_to_balance( name owner );
 
          static asset get_supply( name token_contract_account, symbol_code sym_code )
@@ -77,24 +68,6 @@ namespace chex{
             accounts accountstable( token_contract_account, owner.value );
             const auto& ac = accountstable.get( sym_code.raw() );
             return ac.balance;
-         }
-
-         [[eosio::action]]
-         void deletetable(name owner, asset token)
-         {
-           require_auth(_self);
-           accounts from_acnts( _self, owner.value );
-           locked_funds locked( _self,  owner.value );
-           stats statstable( _self, token.symbol.code().raw() );
-           unlocking_funds unlocking( _self, owner.value );
-           auto it1 = from_acnts.begin();
-           auto it2 = locked.begin();
-           auto it3 = statstable.begin();
-           auto it4 = unlocking.begin();
-           while(it1 != from_acnts.end()) it1 = from_acnts.erase(it1);
-           while(it2 != locked.end()) it2 = locked.erase(it2);
-           while(it3 != statstable.end()) it3 = statstable.erase(it3);
-           while(it4 != unlocking.end()) it4 = unlocking.erase(it4);
          }
 
          using create_action = eosio::action_wrapper<"create"_n, &token::create>;

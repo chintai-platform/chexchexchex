@@ -130,7 +130,6 @@ void token::burn( name owner, asset quantity )
       });
 }
 
-/// \todo If locking and there are funds currently unlocking, re-lock them first
 void token::lock( name owner, asset quantity, uint8_t days )
 {
   require_auth(owner);
@@ -229,18 +228,6 @@ void token::convert_locked_to_balance( name owner )
   }
 }
 
-void token::refund( name owner )
-{
-  require_auth(owner);
-  convert_locked_to_balance( owner );
-}
-
-void token::lock2balance( name owner )
-{
-  require_auth(_self);
-  convert_locked_to_balance( owner );
-}
-
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
@@ -299,10 +286,6 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
-void token::nonce( uint128_t nonce )
-{
-}
-
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn)(refund)(lock2balance)(nonce)(deletetable) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn) )
