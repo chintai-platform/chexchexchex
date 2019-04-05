@@ -1,3 +1,2 @@
-<h1 class="contract"> hi </h1>
-
-Stub for hi action's ricardian contract
+<h1 class="clause">General Use</h1>
+This contract is intended for use with the CHEX token. The CHEX token is a utility token for the Chintai platform.

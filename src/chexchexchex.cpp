@@ -3,7 +3,7 @@
  *  @copyright defined in eos/LICENSE.txt
  */
 
-#include "chex.hpp"
+#include "chexchexchex.hpp"
 #include <eosio/transaction.hpp>
 #include <chrono>
 
