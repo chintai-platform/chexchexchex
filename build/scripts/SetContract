@@ -1,7 +1,0 @@
-#!/bin/bash
-if [ -z "$1" ];
-then
-  cleos set contract chexchexchex ../chex token.wasm token.abi
-else
-  cleos set contract chexchexchex ../../chex token.wasm token.abi
-fi
