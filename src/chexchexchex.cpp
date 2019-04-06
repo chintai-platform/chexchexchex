@@ -68,9 +68,9 @@ void token::transfer( name    from,
                       asset   quantity,
                       string  memo )
 {
-    check( from != to, "cannot transfer to self" );
+    check( from != to, "Cannot transfer to self" );
     require_auth(from);
-    check( is_account( to ), "to account does not exist");
+    check( is_account( to ), "Account " + to.to_string() + " does not exist");
     auto sym = quantity.symbol.code();
     stats statstable( _self, sym.raw() );
     const auto& st = statstable.get( sym.raw() );
@@ -78,10 +78,10 @@ void token::transfer( name    from,
     require_recipient( from );
     require_recipient( to );
 
-    check( quantity.is_valid(), "invalid quantity" );
-    check( quantity.amount > 0, "must transfer positive quantity" );
-    check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-    check( memo.size() <= 256, "memo has more than 256 bytes" );
+    check( quantity.is_valid(), "Invalid quantity" );
+    check( quantity.amount > 0, "Must transfer positive quantity" );
+    check( quantity.symbol == st.supply.symbol, "Symbol precision mismatch, make sure that the token name is CHEX, and that you are specifying it with 8 decimal places of precision" );
+    check( memo.size() <= 256, "Memo is too long. It must be 256 characters or less" );
     convert_locked_to_balance( from );
 
     auto payer = has_auth( to ) ? to : from;
@@ -195,7 +195,7 @@ void token::convert_locked_to_balance( name owner )
       continue;
     }
     auto acnt_itr = from_acnts.find(itr->quantity.symbol.code().raw());
-    check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team" );
+    check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team on Telegram (@chintaiEOS) or by email (hello@chintai.io)." );
     from_acnts.modify(acnt_itr, same_payer, [&](auto & entry)
         {
         entry.locked -= itr->quantity;
@@ -207,9 +207,9 @@ void token::convert_locked_to_balance( name owner )
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
-   const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
-   check( from.balance.amount >= value.amount, "overdrawn balance" );
-   check( from.balance - from.locked >= value, "You are attempting to transfer " + value.to_string() + ", but you can only transfer " + (from.balance - from.locked).to_string() + ", because " + from.locked.to_string() + " are in the locked state. You can unlock them using the \"unlock\" action" );
+   const auto& from = from_acnts.get( value.symbol.code().raw(), "No balance object found, you do not own any CHEX" );
+   check( from.balance.amount >= value.amount, "Overdrawn balance, only " + from.balance.to_string() + " is available" );
+   check( from.balance - from.locked >= value, "You are attempting to transfer " + value.to_string() + ", but you can only transfer " + (from.balance - from.locked).to_string() + ", because " + from.locked.to_string() + " are in the locked state. You can unlock them using the \"unlock\" action. You must then wait for the tokens to finish unlocking before attempting this action again." );
 
    from_acnts.modify( from, owner, [&]( auto& a ) {
          a.balance -= value;
