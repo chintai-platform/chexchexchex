@@ -63,30 +63,6 @@ void token::issue( name to, asset quantity, string memo )
     }
 }
 
-void token::retire( asset quantity, string memo )
-{
-    auto sym = quantity.symbol;
-    check( sym.is_valid(), "invalid symbol name" );
-    check( memo.size() <= 256, "memo has more than 256 bytes" );
-
-    stats statstable( _self, sym.code().raw() );
-    auto existing = statstable.find( sym.code().raw() );
-    check( existing != statstable.end(), "token with symbol does not exist" );
-    const auto& st = *existing;
-
-    require_auth( st.issuer );
-    check( quantity.is_valid(), "invalid quantity" );
-    check( quantity.amount > 0, "must retire positive quantity" );
-
-    check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-
-    statstable.modify( st, same_payer, [&]( auto& s ) {
-       s.supply -= quantity;
-    });
-
-    sub_balance( st.issuer, quantity );
-}
-
 void token::transfer( name    from,
                       name    to,
                       asset   quantity,
@@ -288,4 +264,4 @@ void token::close( name owner, const symbol& symbol )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(retire)(lock)(unlock)(burn) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn) )

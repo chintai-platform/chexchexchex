@@ -31,9 +31,6 @@ namespace chex{
          void issue( name to, asset quantity, string memo );
 
          [[eosio::action]]
-         void retire( asset quantity, string memo );
-
-         [[eosio::action]]
          void transfer( name    from,
                         name    to,
                         asset   quantity,
@@ -72,7 +69,6 @@ namespace chex{
 
          using create_action = eosio::action_wrapper<"create"_n, &token::create>;
          using issue_action = eosio::action_wrapper<"issue"_n, &token::issue>;
-         using retire_action = eosio::action_wrapper<"retire"_n, &token::retire>;
          using transfer_action = eosio::action_wrapper<"transfer"_n, &token::transfer>;
          using open_action = eosio::action_wrapper<"open"_n, &token::open>;
          using close_action = eosio::action_wrapper<"close"_n, &token::close>;
