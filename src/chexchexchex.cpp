@@ -16,13 +16,13 @@ void token::create( name   issuer,
     require_auth( _self );
 
     auto sym = maximum_supply.symbol;
-    check( sym.is_valid(), "invalid symbol name" );
-    check( maximum_supply.is_valid(), "invalid supply");
-    check( maximum_supply.amount > 0, "max-supply must be positive");
+    check( sym.is_valid(), "Invalid symbol name: " + sym.code().to_string() );
+    check( maximum_supply.is_valid(), "Invalid maximum supply: " + maximum_supply.to_string());
+    check( maximum_supply.amount > 0, "Maximum supply must be positive, current amount is set to " + std::to_string(maximum_supply.amount) );
 
     stats statstable( _self, sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
-    check( existing == statstable.end(), "token with symbol already exists" );
+    check( existing == statstable.end(), "Token with symbol already exists (" + sym.code().to_string() + ")" );
 
     statstable.emplace( _self, [&]( auto& s ) {
        s.supply.symbol = maximum_supply.symbol;
@@ -113,6 +113,7 @@ void token::lock( name owner, asset quantity, uint8_t days )
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
   convert_locked_to_balance( owner );
+  check(quantity.amount > 0, "Can not lock a negative amount");
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock your tokens for more than 100 days");
   check(days > 0, "You can not lock your tokens for less than 1 day");
@@ -147,6 +148,7 @@ void token::unlock( name owner, asset quantity )
 
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
+  check(quantity.amount > 0, "Can not unlock a negative amount");
   convert_locked_to_balance( owner );
   check(acnt_itr->locked >= quantity, "You can not unlock more than is currently locked. The maximum you can unlock is " + acnt_itr->locked.to_string());
 
