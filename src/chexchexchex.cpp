@@ -44,15 +44,15 @@ void token::issue( name to, asset quantity, string memo )
 
     stats statstable( _self, sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
-    check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+    check( existing != statstable.end(), "Token with symbol " + sym.code().to_string() + " does not exist, create token before issue" );
     const auto& st = *existing;
 
     require_auth( st.issuer );
-    check( quantity.is_valid(), "invalid quantity" );
-    check( quantity.amount > 0, "must issue positive quantity" );
+    check( quantity.is_valid(), "Invalid quantity: " + quantity.to_string() );
+    check( quantity.amount > 0, "Must issue positive quantity (quantity amount is " + std::to_string(quantity.amount) + ")" );
 
-    check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-    check( quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
+    check( quantity.symbol == st.supply.symbol, "Symbol mismatch, expected " + st.supply.symbol.code().to_string() + ", but trying to issue " + quantity.symbol.code().to_string() );
+    check( quantity.amount <= st.max_supply.amount - st.supply.amount, "Quantity (" + quantity.to_string() + ") exceeds available supply (" + (st.max_supply - st.supply).to_string() + ")");
 
     statstable.modify( st, same_payer, [&]( auto& s ) {
        s.supply += quantity;
