@@ -15,6 +15,21 @@ void check_symbol(eosio::symbol const & sym)
   check( sym.is_valid(), "Invalid symbol name: " + sym.code().to_string() );
 }
 
+void check_memo_length(string const & memo)
+{
+  check( memo.size() <= 256, "Memo is too long (" + memo.size() + " characters). It must be 256 characters or less");
+}
+
+void check_quantity(eosio::asset const & quantity)
+{
+  check( quantity.is_valid(), "Invalid quantity: " + quantity.to_string() );
+}
+
+void check_symbol_precision(eosio::symbol const & symbol, eosio::symbol const & stat_symbol)
+{
+  check( symbol == stat_symbol, "Symbol precision mismatch, make sure that the token name is " + stat_symbol.code().to_string() + ", and that you are specifying it with " + std::to_string(stat_symbol.precision) + " decimal places of precision" );
+}
+
 void token::create( name   issuer,
                     asset  maximum_supply )
 {
@@ -40,15 +55,15 @@ void token::create( name   issuer,
 void token::issue( name to, asset quantity, string memo )
 {
     auto sym = quantity.symbol;
-    check( memo.size() <= 256, "Memo has more than 256 bytes" );
 
+    check_memo_length(memo);
     stats statstable( _self, sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
     check( existing != statstable.end(), "Token with symbol " + sym.code().to_string() + " does not exist, create token before issue" );
     const auto& st = *existing;
 
     require_auth( st.issuer );
-    check( quantity.is_valid(), "Invalid quantity: " + quantity.to_string() );
+    check_quantity(quantity);
     check( quantity.amount > 0, "Must issue positive quantity (quantity amount is " + std::to_string(quantity.amount) + ")" );
 
     check( quantity.symbol == st.supply.symbol, "Symbol mismatch, expected " + st.supply.symbol.code().to_string() + ", but trying to issue " + quantity.symbol.code().to_string() );
@@ -82,10 +97,10 @@ void token::transfer( name    from,
     require_recipient( from );
     require_recipient( to );
 
-    check( quantity.is_valid(), "Invalid quantity" );
-    check( quantity.amount > 0, "Must transfer positive quantity" );
-    check( quantity.symbol == st.supply.symbol, "Symbol precision mismatch, make sure that the token name is CHEX, and that you are specifying it with 8 decimal places of precision" );
-    check( memo.size() <= 256, "Memo is too long. It must be 256 characters or less" );
+    check_quantity(quantity);
+    check( quantity.amount > 0, "Must transfer positive quantity (attmpted to transfer quantity amount of " + std::to_string(quantity.amount) );
+    check_symbol_precision(quantity.symbol, st.supply.symbol);
+    check_memo_length(memo);
     convert_locked_to_balance( from );
 
     auto payer = has_auth( to ) ? to : from;
@@ -100,9 +115,10 @@ void token::burn( name owner, asset quantity )
   convert_locked_to_balance( owner );
   accounts from_acnts( _self, owner.value );
   stats statstable( _self, quantity.symbol.code().raw());
+  check( quantity.amount > 0, "Must burn positive quantity (attmpted to burn quantity amount of " + std::to_string(quantity.amount) );
   sub_balance( owner, quantity );
   auto currency = statstable.find(quantity.symbol.code().raw());
-  check(currency != statstable.end(), "Invalid token");
+  check(currency != statstable.end(), "Invalid token (" + quantity.symbol.code().to_string() + ")");
   statstable.modify( currency, same_payer, [&]( auto & entry )
       {
         entry.supply -= quantity;
@@ -201,7 +217,7 @@ void token::convert_locked_to_balance( name owner )
       continue;
     }
     auto acnt_itr = from_acnts.find(itr->quantity.symbol.code().raw());
-    check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team on Telegram (@chintaiEOS) or by email (hello@chintai.io)." );
+    check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team on Telegram (https://t.me/ChintaiEOS) or by email (hello@chintai.io)." );
     from_acnts.modify(acnt_itr, same_payer, [&](auto & entry)
         {
         entry.locked -= itr->quantity;
