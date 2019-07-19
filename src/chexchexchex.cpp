@@ -10,13 +10,18 @@
 using namespace eosio;
 namespace chex{
 
+void check_symbol(eosio::symbol const & sym)
+{
+  check( sym.is_valid(), "Invalid symbol name: " + sym.code().to_string() );
+}
+
 void token::create( name   issuer,
                     asset  maximum_supply )
 {
     require_auth( _self );
 
     auto sym = maximum_supply.symbol;
-    check( sym.is_valid(), "Invalid symbol name: " + sym.code().to_string() );
+    check_symbol(sym);
     check( maximum_supply.is_valid(), "Invalid maximum supply: " + maximum_supply.to_string());
     check( maximum_supply.amount > 0, "Maximum supply must be positive, current amount is set to " + std::to_string(maximum_supply.amount) );
 
@@ -35,8 +40,7 @@ void token::create( name   issuer,
 void token::issue( name to, asset quantity, string memo )
 {
     auto sym = quantity.symbol;
-    check( sym.is_valid(), "invalid symbol name" );
-    check( memo.size() <= 256, "memo has more than 256 bytes" );
+    check( memo.size() <= 256, "Memo has more than 256 bytes" );
 
     stats statstable( _self, sym.code().raw() );
     auto existing = statstable.find( sym.code().raw() );
