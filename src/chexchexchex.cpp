@@ -17,7 +17,7 @@ void check_symbol(eosio::symbol const & sym)
 
 void check_memo_length(string const & memo)
 {
-  check( memo.size() <= 256, "Memo is too long (" + memo.size() + " characters). It must be 256 characters or less");
+  check( memo.size() <= 256, "Memo is too long (" + std::to_string(memo.size()) + " characters). It must be 256 characters or less");
 }
 
 void check_quantity(eosio::asset const & quantity)
@@ -27,7 +27,7 @@ void check_quantity(eosio::asset const & quantity)
 
 void check_symbol_precision(eosio::symbol const & symbol, eosio::symbol const & stat_symbol)
 {
-  check( symbol == stat_symbol, "Symbol precision mismatch, make sure that the token name is " + stat_symbol.code().to_string() + ", and that you are specifying it with " + std::to_string(stat_symbol.precision) + " decimal places of precision" );
+  check( symbol == stat_symbol, "Symbol precision mismatch, make sure that the token name is " + stat_symbol.code().to_string() + ", and that you are specifying it with " + std::to_string(stat_symbol.precision()) + " decimal places of precision" );
 }
 
 void token::create( name   issuer,
@@ -162,6 +162,7 @@ void token::lock( name owner, asset quantity, uint8_t days )
 
 void token::unlock( name owner, asset quantity )
 {
+  require_auth(owner);
   accounts from_acnts( _self, owner.value );
   locked_funds locked( _self, owner.value );
   unlocking_funds unlocking( _self, owner.value );
