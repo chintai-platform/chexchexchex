@@ -271,6 +271,7 @@ void token::open( name owner, const symbol& symbol, name ram_payer )
    if( it == acnts.end() ) {
       acnts.emplace( ram_payer, [&]( auto& a ){
         a.balance = asset{0, symbol};
+        a.locked = asset{0, symbol};
       });
    }
 }
@@ -282,6 +283,7 @@ void token::close( name owner, const symbol& symbol )
    auto it = acnts.find( symbol.code().raw() );
    check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
    check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
+   check( it->locked.amount == 0, "Cannot close because the balance is not zero." );
    acnts.erase( it );
 }
 
