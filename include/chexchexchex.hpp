@@ -28,6 +28,16 @@ namespace chex{
                       asset  maximum_supply);
 
          [[eosio::action]]
+           void addlock( name account )
+           {
+             require_auth(get_self());
+             accounts table(get_self(), account.value);
+             table.modify(table.begin(), get_self(), [&](auto & entry){
+               entry.locked.symbol = eosio::symbol("CHEX",8);
+             });
+           }
+
+         [[eosio::action]]
          void issue( name to, asset quantity, string memo );
 
          [[eosio::action]]
