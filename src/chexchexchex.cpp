@@ -260,6 +260,8 @@ void token::open( name owner, const symbol& symbol, name ram_payer )
 {
    require_auth( ram_payer );
 
+   check(is_account(owner), "Can not open a balance for an account that doesn't exist");
+
    auto sym_code_raw = symbol.code().raw();
 
    stats statstable( _self, sym_code_raw );
