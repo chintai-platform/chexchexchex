@@ -1,10 +1,12 @@
 #!/bin/bash
 
 source $CHEXCHEXCHEX_DIR/tests/system_tests/global.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/create_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/transfer_tests.sh
 
 run_all_tests(){
   echo "Running all tests"
+  create_tests
   transfer_tests
 }
 

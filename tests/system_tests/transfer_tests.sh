@@ -25,7 +25,7 @@ function transfer_no_locked_balance()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -57,7 +57,7 @@ function transfer_no_locked_balance()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "The transfer failed although it should have succeeded: $result"
+    test_fail "${FUNCNAME[0]}: The transfer failed although it should have succeeded: $result"
     return 1
   fi
 
@@ -89,7 +89,7 @@ function transfer_partially_locked_balance()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -121,10 +121,52 @@ function transfer_partially_locked_balance()
     return 1
   fi
 
+  local account1_balance_before_transfer=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].balance)
+  if [[ $account1_balance_before_transfer != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The balance of account1 is incorrect, expected \"$quantity $symbol\" but observed \"$account1_balance_before_transfer\""
+    return 1
+  fi
+
+  local account1_locked_before_transfer=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].locked)
+  if [[ $account1_locked_before_transfer != "$locked_quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked of account1 is incorrect, expected \"$locked_quantity $symbol\" but observed \"$account1_locked_before_transfer\""
+    return 1
+  fi
+
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$unlocked_quantity $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "The transfer failed although it should have succeeded: $result"
+    test_fail "${FUNCNAME[0]}: The transfer failed although it should have succeeded: $result"
+    return 1
+  fi
+
+  local account1_balance_after_transfer=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].balance)
+  if [[ $account1_balance_after_transfer != "$locked_quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The balance of account1 is incorrect, expected \"$locked_quantity $symbol\" but observed \"$account1_balance_after_transfer\""
+    return 1
+  fi
+
+  local account2_balance_after_transfer=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].balance)
+  if [[ $account2_balance_after_transfer != "$unlocked_quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The balance of account2 is incorrect, expected \"$unlocked_quantity $symbol\" but observed \"$account2_balance_after_transfer\""
+    return 1
+  fi
+
+  local account1_locked_after_transfer=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].locked)
+  if [[ $account1_locked_after_transfer != "$locked_quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked of account1 is incorrect, expected \"$locked_quantity $symbol\" but observed \"$account1_locked_after_transfer\""
+    return 1
+  fi
+
+  local account2_locked_after_transfer=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].locked)
+  if [[ $account2_locked_after_transfer != "0.00000000 $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked of account2 is incorrect, expected \"0.00000000 $symbol\" but observed \"$account2_locked_after_transfer\""
     return 1
   fi
 
@@ -148,7 +190,7 @@ function transfer_wrong_authority()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
 
@@ -181,21 +223,21 @@ function transfer_wrong_authority()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $account2) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite the from account not being the authorizer"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite the from account not being the authorizer"
     return 1
   fi
 
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $account3) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite the from account not being the authorizer"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite the from account not being the authorizer"
     return 1
   fi
 
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $chex_contract) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite the from account not being the authorizer"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite the from account not being the authorizer"
     return 1
   fi
 
@@ -213,7 +255,7 @@ function transfer_wrong_receiver()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -251,7 +293,7 @@ function transfer_wrong_quantity_amount()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -276,13 +318,13 @@ function transfer_wrong_quantity_amount()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"0.00000000 $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite quantity being zero"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite quantity being zero"
     return 1
   fi
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"-1.00000000 $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite quantity being negative"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite quantity being negative"
     return 1
   fi
 
@@ -300,7 +342,7 @@ function transfer_wrong_quantity_symbol()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -325,7 +367,7 @@ function transfer_wrong_quantity_symbol()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity FAKE\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite symbol being incorrect"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite symbol being incorrect"
     return 1
   fi
 
@@ -343,7 +385,7 @@ function transfer_no_balance()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -362,7 +404,7 @@ function transfer_no_balance()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite account1 having no funds"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite account1 having no funds"
     return 1
   fi
 
@@ -380,7 +422,7 @@ function transfer_when_locked()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -411,7 +453,7 @@ function transfer_when_locked()
   result=$( (cleos push action -f $chex_contract transfer "[$account1, $account2, \"$quantity $symbol\", \"memo\"]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The transfer succeeded, despite account1 having its funds locked up"
+    test_fail "${FUNCNAME[0]}: The transfer succeeded, despite account1 having its funds locked up"
     return 1
   fi
 
