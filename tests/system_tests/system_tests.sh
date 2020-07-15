@@ -5,6 +5,7 @@ source $CHEXCHEXCHEX_DIR/tests/system_tests/create_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/transfer_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/burn_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/open_tests.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/close_tests.sh
 
 run_all_tests(){
   echo "Running all tests"
@@ -12,6 +13,7 @@ run_all_tests(){
   transfer_tests
   burn_tests
   open_tests
+  close_tests
 }
 
 run_test_suite(){

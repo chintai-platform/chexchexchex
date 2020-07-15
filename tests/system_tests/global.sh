@@ -15,11 +15,12 @@ test_lock=./test_status.lock
 
 clean_exit(){
   close_nodeos
+  exit_code=$?
   rm -f tests_passed
   rm -f tests_failed
   rm -f tests_total
   rm -rf $test_lock
-  exit $1
+  exit $exit_code
 }
 
 test_pass(){
@@ -300,6 +301,7 @@ close_nodeos(){
   if [[ $tests_failed -gt 0 ]]
   then echo -e "\e[31m$tests_failed/$tests_total Failed\e[0m"
   fi
+  return $tests_failed
 }
 
 function helper_send_token()
