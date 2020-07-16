@@ -333,6 +333,13 @@ function lock_wrong_time()
     return 1
   fi
 
+  result=$( (cleos push action -f $chex_contract lock "[$account1 \"$quantity $symbol\" 101]" -p $account1) 2>&1)
+  if [[ $? -eq 0 ]]
+  then
+    test_fail "The lock succeeded, despite the time being 101"
+    return 1
+  fi
+
   test_pass "${FUNCNAME[0]}"
 }
 
