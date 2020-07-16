@@ -6,6 +6,9 @@ source $CHEXCHEXCHEX_DIR/tests/system_tests/transfer_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/burn_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/open_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/close_tests.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/issue_tests.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/lock_tests.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/unlock_tests.sh
 
 run_all_tests(){
   echo "Running all tests"
@@ -14,6 +17,9 @@ run_all_tests(){
   burn_tests
   open_tests
   close_tests
+  issue_tests
+  lock_tests
+  unlock_tests
 }
 
 run_test_suite(){

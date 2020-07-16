@@ -280,6 +280,12 @@ setup_chex_contract(){
     echo "Failed to set chexchexchex contract"
     return 1
   fi
+  result=$( (cleos set account permission $account active --add-code) 2>&1)
+  if [[ $? -ne 0 ]]
+  then
+    echo "Failed to set up eosio.code permission for chex contract"
+    return 1
+  fi
   echo $account
 }
 
