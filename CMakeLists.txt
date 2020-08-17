@@ -11,7 +11,7 @@ ExternalProject_Add(
    CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${EOSIO_CDT_ROOT}/lib/cmake/eosio.cdt/EosioWasmToolchain.cmake
    UPDATE_COMMAND ""
    PATCH_COMMAND ""
-   TEST_COMMAND ""
+   TEST_COMMAND "${CMAKE_SOURCE_DIR}/tests/system_tests/system_tests.sh"
    INSTALL_COMMAND ""
    BUILD_ALWAYS 1
 )

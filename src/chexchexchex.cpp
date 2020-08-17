@@ -260,6 +260,8 @@ void token::open( name owner, const symbol& symbol, name ram_payer )
 {
    require_auth( ram_payer );
 
+   check(is_account(owner), "Can not open a balance for an account that doesn't exist");
+
    auto sym_code_raw = symbol.code().raw();
 
    stats statstable( _self, sym_code_raw );
@@ -287,6 +289,16 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
+void token::addlock( name account )
+{
+  require_auth(get_self());
+  accounts table(get_self(), account.value);
+  table.modify(table.begin(), get_self(), [&](auto & entry){
+      eosio::asset locked(entry.locked.amount, entry.balance.symbol);
+      entry.locked = locked;
+      });
+}
+
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn)(addlock) )

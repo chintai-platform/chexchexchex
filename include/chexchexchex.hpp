@@ -28,6 +28,9 @@ namespace chex{
                       asset  maximum_supply);
 
          [[eosio::action]]
+           void addlock( name account );
+
+         [[eosio::action]]
          void issue( name to, asset quantity, string memo );
 
          [[eosio::action]]
