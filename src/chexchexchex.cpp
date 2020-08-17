@@ -289,6 +289,16 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
+void token::addlock( name account )
+{
+  require_auth(get_self());
+  accounts table(get_self(), account.value);
+  table.modify(table.begin(), get_self(), [&](auto & entry){
+      eosio::asset locked(entry.locked.amount, entry.balance.symbol);
+      entry.locked = locked;
+      });
+}
+
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn) )
+EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn)(addlock) )

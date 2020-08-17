@@ -9,6 +9,7 @@ source $CHEXCHEXCHEX_DIR/tests/system_tests/close_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/issue_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/lock_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/unlock_tests.sh
+source $CHEXCHEXCHEX_DIR/tests/system_tests/addlock_tests.sh
 
 run_all_tests(){
   echo "Running all tests"
@@ -20,6 +21,7 @@ run_all_tests(){
   issue_tests
   lock_tests
   unlock_tests
+  addlock_tests
 }
 
 run_test_suite(){

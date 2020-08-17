@@ -22,7 +22,7 @@ function open_success()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -35,7 +35,7 @@ function open_success()
   result=$( (cleos push action -f $chex_contract open "[$account1 \"$precision,$symbol\" $account1]" -p $account1) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "The open action failed although it should have succeeded: $result"
+    test_fail "${FUNCNAME[0]}: The open action failed although it should have succeeded: $result"
     return 1
   fi
 
@@ -56,7 +56,7 @@ function open_success()
   result=$( (cleos push action -f $chex_contract open "[$account1 \"$precision,$symbol\" $account1]" -p $account1) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "The open action failed after it succeeded the first time, although it should have succeeded: $result"
+    test_fail "${FUNCNAME[0]}: The open action failed after it succeeded the first time, although it should have succeeded: $result"
     return 1
   fi
 
@@ -74,7 +74,7 @@ function open_wrong_authority()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
 
@@ -94,7 +94,7 @@ function open_wrong_authority()
   result=$( (cleos push action -f $chex_contract open "[$account1 \"$precision,$symbol\" $account2]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The open action succeeded, despite the ram_payer account not being the authorizer"
+    test_fail "${FUNCNAME[0]}: The open action succeeded, despite the ram_payer account not being the authorizer"
     return 1
   fi
 
@@ -112,7 +112,7 @@ function open_wrong_account()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -126,7 +126,7 @@ function open_wrong_account()
   result=$( (cleos push action -f $chex_contract open "[$account2 \"$precision,$symbol\" $account1]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The open action succeeded, despite account2 not existing"
+    test_fail "${FUNCNAME[0]}: The open action succeeded, despite account2 not existing"
     return 1
   fi
 
@@ -144,7 +144,7 @@ function open_wrong_symbol()
   local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
-    test_fail "Failed to create $symbol token: $result"
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
     return 1
   fi
   local account1=$(create_random_account)
@@ -157,14 +157,14 @@ function open_wrong_symbol()
   result=$( (cleos push action -f $chex_contract open "[$account1 \"FAKE,8\" $account1]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The open action succeeded, despite symbol being incorrect"
+    test_fail "${FUNCNAME[0]}: The open action succeeded, despite symbol being incorrect"
     return 1
   fi
 
   result=$( (cleos push action -f $chex_contract open "[$account1 \"CHEX,4\" $account1]" -p $account1) 2>&1)
   if [[ $? -eq 0 ]]
   then
-    test_fail "The open action succeeded, despite symbol being incorrect"
+    test_fail "${FUNCNAME[0]}: The open action succeeded, despite symbol being incorrect"
     return 1
   fi
 
