@@ -301,4 +301,4 @@ void token::addlock( name account )
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn)(addlock) )
+// EOSIO_DISPATCH( chex::token, (create)(issue)(transfer)(open)(close)(lock)(unlock)(burn)(addlock) )

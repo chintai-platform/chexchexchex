@@ -75,6 +75,28 @@ namespace chex{
          using transfer_action = eosio::action_wrapper<"transfer"_n, &token::transfer>;
          using open_action = eosio::action_wrapper<"open"_n, &token::open>;
          using close_action = eosio::action_wrapper<"close"_n, &token::close>;
+
+#if LOCAL
+         [[eosio::action]]
+           void mockopenfail(eosio::name const & account)
+           {
+             require_auth(get_self());
+             accounts table(get_self(), account.value);
+             auto addentry = [&](auto & entry)
+             {
+               entry.balance = eosio::asset(0, eosio::symbol("CHEX",8));
+             };
+             if(table.begin() == table.end())
+             {
+               table.emplace(get_self(), addentry);
+             }
+             else
+             {
+               table.modify(table.begin(), get_self(), addentry);
+             }
+           }
+#endif
+
       private:
          struct [[eosio::table]] account {
             asset    balance;

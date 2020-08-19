@@ -274,7 +274,7 @@ setup_chex_contract(){
     echo "Failed to create account $account: $result"
     return 1
   fi
-  timeout "cleos set contract $account $CHEXCHEXCHEX_DIR/build/chexchexchex" 20
+  timeout "cleos set contract $account $CHEXCHEXCHEX_DIR/build/chexchexchex chexchexchex_local.wasm chexchexchex_local.abi" 20
   if [[ $? -ne 0 ]]
   then
     echo "Failed to set chexchexchex contract"
