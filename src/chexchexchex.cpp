@@ -316,6 +316,7 @@ void token::trnsferchain( name from, std::string to, asset quantity, string memo
 
   check_quantity(quantity);
   check( quantity.amount > 0, "Must transfer positive quantity (attmpted to transfer quantity amount of " + std::to_string(quantity.amount) );
+  check( chain == "bsc"_n || chain == "eth"_n, "You can only transfer to chains bsc or eth. Attempted to transfer to chain " + chain.to_string() );
   check_symbol_precision(quantity.symbol, st.supply.symbol);
   check_memo_length(memo);
   convert_locked_to_balance( from );

@@ -72,7 +72,7 @@ function trnsferchain_no_locked_balance()
   local account2_balance_after_trnsferchain=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].balance)
   if [[ $account2_balance_after_trnsferchain != "$quantity $symbol" ]]
   then
-    test_fail "${FUNCNAME[0]}: The balance of account1 is incorrect, expected \"$quantity $symbol\" but observed \"$account2_balance_after_trnsferchain\""
+    test_fail "${FUNCNAME[0]}: The balance of account2 is incorrect, expected \"$quantity $symbol\" but observed \"$account2_balance_after_trnsferchain\""
     return 1
   fi
 
