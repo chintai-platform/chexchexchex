@@ -37,6 +37,13 @@ namespace chex{
                         string  memo );
 
          [[eosio::action]]
+         void trnsferchain( name    from,
+                            std::string to,
+                            asset   quantity,
+                            string  memo,
+                            eosio::name chain );
+
+         [[eosio::action]]
          void open( name owner, const symbol& symbol, name ram_payer );
 
          [[eosio::action]]
@@ -50,6 +57,9 @@ namespace chex{
 
          [[eosio::action]]
          void burn( name owner, asset quantity );
+
+         [[eosio::action]]
+         void retire( name owner, asset quantity );
 
          void convert_locked_to_balance( name owner );
 

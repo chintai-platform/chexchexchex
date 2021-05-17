@@ -109,6 +109,22 @@ void token::transfer( name    from,
     add_balance( to, quantity, payer );
 }
 
+void token::retire( name owner, asset quantity )
+{
+  require_auth(owner);
+  convert_locked_to_balance( owner );
+  accounts from_acnts( _self, owner.value );
+  stats statstable( _self, quantity.symbol.code().raw());
+  check( quantity.amount > 0, "Must burn positive quantity (attmpted to burn quantity amount of " + std::to_string(quantity.amount) );
+  sub_balance( owner, quantity );
+  auto currency = statstable.find(quantity.symbol.code().raw());
+  check(currency != statstable.end(), "Invalid token (" + quantity.symbol.code().to_string() + ")");
+  statstable.modify( currency, same_payer, [&]( auto & entry )
+      {
+        entry.supply -= quantity;
+      });
+}
+
 void token::burn( name owner, asset quantity )
 {
   require_auth(owner);
@@ -289,4 +305,22 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
+void token::trnsferchain( name from, std::string to, asset quantity, string memo, eosio::name chain )
+{
+  require_auth(from);
+  auto sym = quantity.symbol.code();
+  stats statstable( _self, sym.raw() );
+  const auto& st = statstable.get( sym.raw() );
+
+  require_recipient( from );
+
+  check_quantity(quantity);
+  check( quantity.amount > 0, "Must transfer positive quantity (attmpted to transfer quantity amount of " + std::to_string(quantity.amount) );
+  check_symbol_precision(quantity.symbol, st.supply.symbol);
+  check_memo_length(memo);
+  convert_locked_to_balance( from );
+
+  retire(from, quantity);
+
+}
 } /// namespace eosio
