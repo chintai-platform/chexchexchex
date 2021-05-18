@@ -38,7 +38,7 @@ function trnsferchain_no_locked_balance()
   local account2=$(create_random_account)
   if [[ $? -ne 0 ]]
   then
-    test_fail "${FUNCNAME[0]}: Failed to create account1: $account2"
+    test_fail "${FUNCNAME[0]}: Failed to create account1: $account1"
     return 1
   fi
   result=$( (helper_send_token $account1 $quantity $symbol $chex_contract $chex_contract) 2>&1)
@@ -69,13 +69,6 @@ function trnsferchain_no_locked_balance()
     return 1
   fi
 
-  local account2_balance_after_trnsferchain=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].balance)
-  if [[ $account2_balance_after_trnsferchain != "$quantity $symbol" ]]
-  then
-    test_fail "${FUNCNAME[0]}: The balance of account2 is incorrect, expected \"$quantity $symbol\" but observed \"$account2_balance_after_trnsferchain\""
-    return 1
-  fi
-
   test_pass "${FUNCNAME[0]}"
 }
 
@@ -102,7 +95,7 @@ function trnsferchain_partially_locked_balance()
   local account2=$(create_random_account)
   if [[ $? -ne 0 ]]
   then
-    test_fail "${FUNCNAME[0]}: Failed to create account1: $account2"
+    test_fail "${FUNCNAME[0]}: Failed to create account1: $account1"
     return 1
   fi
   result=$( (helper_send_token $account1 $quantity $symbol $chex_contract $chex_contract) 2>&1)
@@ -150,24 +143,10 @@ function trnsferchain_partially_locked_balance()
     return 1
   fi
 
-  local account2_balance_after_trnsferchain=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].balance)
-  if [[ $account2_balance_after_trnsferchain != "$unlocked_quantity $symbol" ]]
-  then
-    test_fail "${FUNCNAME[0]}: The balance of account2 is incorrect, expected \"$unlocked_quantity $symbol\" but observed \"$account2_balance_after_trnsferchain\""
-    return 1
-  fi
-
   local account1_locked_after_trnsferchain=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].locked)
   if [[ $account1_locked_after_trnsferchain != "$locked_quantity $symbol" ]]
   then
     test_fail "${FUNCNAME[0]}: The locked of account1 is incorrect, expected \"$locked_quantity $symbol\" but observed \"$account1_locked_after_trnsferchain\""
-    return 1
-  fi
-
-  local account2_locked_after_trnsferchain=$(cleos get table $chex_contract $account2 accounts | jq -r .rows[0].locked)
-  if [[ $account2_locked_after_trnsferchain != "0.00000000 $symbol" ]]
-  then
-    test_fail "${FUNCNAME[0]}: The locked of account2 is incorrect, expected \"0.00000000 $symbol\" but observed \"$account2_locked_after_trnsferchain\""
     return 1
   fi
 

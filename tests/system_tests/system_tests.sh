@@ -23,8 +23,9 @@ run_all_tests(){
   #issue_tests
   #lock_tests
   #unlock_tests
+  
   trnsferchain_tests
-  #retire_tests
+  retire_tests
   chainlist_tests
 }
 

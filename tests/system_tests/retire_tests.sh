@@ -91,7 +91,6 @@ function retire_no_locked_balance()
   local issuer=$(echo $stats_table | jq -r .rows[0].issuer)
   
   local expected_supply="0.00000000 $symbol"
-  local expected_max_supply="$(echo "scale=8; ($max_supply_quantity - $quantity)/1.0" | bc) $symbol"
 
   if [[ $supply != $expected_supply ]]
   then
@@ -99,9 +98,9 @@ function retire_no_locked_balance()
     return 1
   fi
 
-  if [[ $max_supply != "$expected_max_supply" ]]
+  if [[ $max_supply != "$max_supply_quantity $symbol" ]]
   then
-    test_fail "${FUNCNAME[0]}: Expected a max supply of \"$expected_max_supply\" but observed \"$max_supply\""
+    test_fail "${FUNCNAME[0]}: Expected a max supply of \"$max_supply_quantity $symbol\" but observed \"$max_supply\""
     return 1
   fi
 
@@ -204,7 +203,6 @@ function retire_partially_locked_balance()
   local issuer=$(echo $stats_table | jq -r .rows[0].issuer)
   
   local expected_supply="$locked_quantity $symbol"
-  local expected_max_supply="$(echo "scale=8; ($max_supply_quantity - $unlocked_quantity)/1.0" | bc) $symbol"
 
   if [[ $supply != $expected_supply ]]
   then
@@ -212,9 +210,9 @@ function retire_partially_locked_balance()
     return 1
   fi
 
-  if [[ $max_supply != "$expected_max_supply" ]]
+  if [[ $max_supply != "$max_supply_quantity $symbol" ]]
   then
-    test_fail "${FUNCNAME[0]}: Expected a max supply of \"$expected_max_supply\" but observed \"$max_supply\""
+    test_fail "${FUNCNAME[0]}: Expected a max supply of \"$max_supply_quantity $symbol\" but observed \"$max_supply\""
     return 1
   fi
 
