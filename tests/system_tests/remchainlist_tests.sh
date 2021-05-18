@@ -24,6 +24,13 @@ function remchainlist_success()
     return 1
   fi
 
+  local chain_entry_before=$(cleos get table $chex_contract $chex_contract chainlist | jq -r .rows[].chain)
+  if [[ $chain_entry_before != $chain ]]
+  then
+    test_fail "${FUNCNAME[0]}: The chainlist entry before was incorrect, expected \"$chain\" but observed \"$chain_entry_before\""
+    return 1
+  fi
+
   result=$( (cleos push action -f $chex_contract remchainlist "[$chain]" -p $chex_contract) 2>&1)
   if [[ $? -ne 0 ]]
   then
@@ -31,10 +38,10 @@ function remchainlist_success()
     return 1
   fi
 
-  local chain_entry=$(cleos get table $chex_contract $chex_contract chainlist | jq -r .rows[].chain)
-  if [[ $chain_entry != $chain ]]
+  local chain_entry_after=$(cleos get table $chex_contract $chex_contract chainlist | jq -r .rows[].chain)
+  if [[ $chain_entry_after != "" ]]
   then
-    test_fail "${FUNCNAME[0]}: The chainlist entry was incorrect, expected \"$chain\" but observed \"$chain_entry\""
+    test_fail "${FUNCNAME[0]}: The chainlist entry after was incorrect, expected \"\" but observed \"$chain_entry_after\""
     return 1
   fi
 
