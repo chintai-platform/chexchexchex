@@ -5,7 +5,6 @@ source $CHEXCHEXCHEX_DIR/tests/system_tests/create_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/transfer_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/burn_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/retire_tests.sh
-source $CHEXCHEXCHEX_DIR/tests/system_tests/chainlist_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/open_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/close_tests.sh
 source $CHEXCHEXCHEX_DIR/tests/system_tests/issue_tests.sh

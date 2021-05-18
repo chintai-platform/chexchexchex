@@ -5,7 +5,7 @@
 
 namespace chex
 {
-  class [[eosio::contract("equity"), eosio::table("chainlist")]] chain_list
+  class [[eosio::contract("chexchexchex"), eosio::table("chainlist")]] chain_list
   {
     private:
       eosio::name     chain;
