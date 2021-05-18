@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include "chainlist.hpp"
+
 namespace eosiosystem {
    class system_contract;
 }
@@ -60,6 +62,12 @@ namespace chex{
 
          [[eosio::action]]
          void retire( name owner, asset quantity );
+
+         [[eosio::action]]
+         void addchainlist( name chain );
+
+         [[eosio::action]]
+         void remchainlist( name chain );
 
          void convert_locked_to_balance( name owner );
 

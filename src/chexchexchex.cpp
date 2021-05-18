@@ -324,4 +324,22 @@ void token::trnsferchain( name from, std::string to, asset quantity, string memo
   retire(from, quantity);
 
 }
+
+void token::addchainlist( name chain )
+{
+  require_auth( _self );
+  chainlist table( _self, _self.value );
+  table.emplace( _self, [&]( auto &entry) {
+    entry.set_chain( chain );
+  });
+}
+
+void token::remchainlist( name chain )
+{
+  require_auth( _self );
+  chainlist table( _self, _self.value );
+  auto itr = table.require_find( chain.value, ("Trying to remove a chain from the chainlist table that does not exist on the table: " + chain.to_string() ).c_str());
+  table.erase( itr );
+}
+
 } /// namespace eosio
