@@ -16,15 +16,14 @@ source $CHEXCHEXCHEX_DIR/tests/system_tests/remchainlist_tests.sh
 
 run_all_tests(){
   echo "Running all tests"
-  #create_tests
-  #transfer_tests
-  #burn_tests
-  #open_tests
-  #close_tests
-  #issue_tests
-  #lock_tests
-  #unlock_tests
-  
+  create_tests
+  transfer_tests
+  burn_tests
+  open_tests
+  close_tests
+  issue_tests
+  lock_tests
+  unlock_tests
   trnsferchain_tests
   retire_tests
   addchainlist_tests
