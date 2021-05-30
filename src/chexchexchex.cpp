@@ -172,6 +172,7 @@ void token::unlock( name owner, asset quantity )
   check(quantity.amount > 0, "Can not unlock a negative amount");
   convert_locked_to_balance( owner );
   check(acnt_itr->locked >= quantity, "You can not unlock more than is currently locked. The maximum you can unlock is " + acnt_itr->locked.to_string());
+  eosio::check(locked.begin() != locked.end(), "All funds are currently being unlocked, please wait for the unlock period to end and then the tokens will be available for transfer");
 
   while(quantity.amount > 0)
   {

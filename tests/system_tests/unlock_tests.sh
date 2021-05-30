@@ -11,6 +11,7 @@ function unlock_tests()
   unlock_wrong_quantity_amount &
   unlock_wrong_quantity_symbol &
   unlock_no_locked_balance &
+  unlock_all_unlocking &
   unlock_no_balance &
 }
 
@@ -594,6 +595,122 @@ function unlock_when_locked()
   if [[ $? -eq 0 ]]
   then
     test_fail "${FUNCNAME[0]}: The unlock succeeded, despite account1 having its funds locked up"
+    return 1
+  fi
+
+  test_pass "${FUNCNAME[0]}"
+}
+
+function unlock_all_unlocking()
+{
+  local chex_contract=$(setup_chex_contract)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Failed to set chex contract: $chex_contract"
+    return 1
+  fi
+  local result=$( (cleos push action $chex_contract create "[\"$chex_contract\" \"1000000000.00000000 $symbol\"]" -p $chex_contract) 2>&1)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Failed to create $symbol token: $result"
+    return 1
+  fi
+  local account1=$(create_random_account)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Failed to create account1: $account1"
+    return 1
+  fi
+  result=$( (helper_send_token $account1 $quantity $symbol $chex_contract $chex_contract) 2>&1)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Failed to generate tokens for test: $result"
+    return 1
+  fi
+
+  result=$( (cleos push action -f $chex_contract lock "[$account1 \"$quantity $symbol\" 1]" -p $account1) 2>&1)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Failed to lock tokens: $result"
+    return 1
+  fi
+  
+  local account1_balance_before_lock=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].balance)
+  if [[ $account1_balance_before_lock != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The balance of account1 is incorrect, expected \"$quantity $symbol\" but observed \"$account1_balance_before_lock\""
+    return 1
+  fi
+
+  local account1_locked_before_lock=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].locked)
+  if [[ $account1_locked_before_lock != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked of account1 is incorrect, expected \"$quantity $symbol\" but observed \"$account1_locked_before_lock\" (first lock)"
+    return 1
+  fi
+
+  local lock_time=$(cleos get table $chex_contract $account1 locked | jq -r .rows[0].lock_time)
+  if [[ $lock_time != "1" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The lock time is expected to be \"1\", but observed \"$lock_time\""
+    return 1
+  fi
+
+  local lock_table_quantity=$(cleos get table $chex_contract $account1 locked | jq -r .rows[0].quantity)
+  if [[ $lock_table_quantity != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked quantity is expected to be \"$quantity $symbol\", but observed \"$lock_table_quantity\""
+    return 1
+  fi
+
+  local time_before_unlock=$(echo "$(date "+%s" -u) + 86400" | bc)
+  result=$( (cleos push action -f $chex_contract unlock "[$account1 \"$quantity $symbol\"]" -p $account1) 2>&1)
+  if [[ $? -ne 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: The unlock failed although it should have succeeded: $result"
+    return 1
+  fi
+  local time_after_unlock=$(echo "$(date "+%s" -u) + 86401" | bc)
+
+  local lock_time=$(cleos get table $chex_contract $account1 locked | jq -r .rows[0].lock_time)
+  if [[ $lock_time != "null" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The lock time is expected to be \"null\", but observed \"$lock_time\""
+    return 1
+  fi
+
+  local lock_table_quantity=$(cleos get table $chex_contract $account1 locked | jq -r .rows[0].quantity)
+  if [[ $lock_table_quantity != "null" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked quantity is expected to be \"null\", but observed \"$lock_table_quantity\""
+    return 1
+  fi
+
+  local account1_balance_after_unlock=$(cleos get table $chex_contract $account1 accounts | jq -r .rows[0].balance)
+  if [[ $account1_balance_after_unlock != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The balance of account1 is incorrect, expected \"$quantity $symbol\" but observed \"$account1_balance_after_unlock\""
+    return 1
+  fi
+
+  local unlocking_fund_id=$(cleos get table $chex_contract $account1 unlocking | jq -r .rows[0].id)
+  if [[ $unlocking_fund_id != "0" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The unlocking table id is not zero"
+    return 1
+  fi
+
+  local unlocking_fund_quantity=$(cleos get table $chex_contract $account1 unlocking | jq -r .rows[0].quantity)
+  if [[ $unlocking_fund_quantity != "$quantity $symbol" ]]
+  then
+    test_fail "${FUNCNAME[0]}: The locked of account1 is incorrect, expected \"$locked_quantity $symbol\" but observed \"$unlocking_fund_quantity\" (third lock)"
+    return 1
+  fi
+
+  result=$( (cleos push action -f $chex_contract unlock "[$account1 \"$quantity $symbol\"]" -p $account1) 2>&1)
+  if [[ $? -eq 0 ]]
+  then
+    test_fail "${FUNCNAME[0]}: Managed to unlock tokens that are already unlocking: $result"
     return 1
   fi
 
