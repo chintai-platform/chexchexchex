@@ -123,12 +123,12 @@ setup_system_contracts(){
     fi
   done
 
-  timeout "cleos set contract eosio.token $EOSIO_CONTRACTS_DIRECTORY/build/contracts//eosio.token" 20
+  timeout "cleos set contract eosio.token $EOSIO_CONTRACTS_DIR/build/contracts//eosio.token" 20
   if [[ $? -ne 0 ]]
   then
     echo "Failed to set contract eosio.token"
   fi
-  timeout "cleos set contract eosio.msig $EOSIO_CONTRACTS_DIRECTORY/build/contracts//eosio.msig" 20
+  timeout "cleos set contract eosio.msig $EOSIO_CONTRACTS_DIR/build/contracts//eosio.msig" 20
   if [[ $? -ne 0 ]]
   then
     echo "Failed to set contract eosio.msig"
@@ -155,10 +155,10 @@ setup_system_contracts(){
 
   sleep 0.5
 
-  timeout "cleos set contract eosio $EOSIO_OLD_CONTRACTS_DIRECTORY/build/contracts//eosio.system" 20
+  timeout "cleos set contract eosio $EOS_BOOT_DIR eosio.boot.wasm eosio.boot.abi" 20
   if [[ $? -ne 0 ]]
   then
-    echo "Failed to set contract for eosio"
+    echo "Failed to set contract for eosio.boot"
   fi
 
   result=$( (cleos push action eosio activate '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]' -p eosio) 2>&1)
@@ -236,7 +236,7 @@ setup_system_contracts(){
 
   sleep 0.5
 
-  timeout "cleos set contract eosio $EOSIO_CONTRACTS_DIRECTORY/build/contracts//eosio.system" 20
+  timeout "cleos set contract eosio $EOSIO_CONTRACTS_DIR/build/contracts//eosio.system" 20
   if [[ $? -ne 0 ]]
   then
     echo "Failed to set contract for eosio"

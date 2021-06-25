@@ -51,6 +51,9 @@ namespace chex{
          [[eosio::action]]
          void burn( name owner, asset quantity );
 
+         [[eosio::action]]
+         void setlocked( eosio::asset locked );
+
          void convert_locked_to_balance( name owner );
 
          static asset get_supply( name token_contract_account, symbol_code sym_code )
@@ -105,6 +108,8 @@ namespace chex{
             asset    supply;
             asset    max_supply;
             name     issuer;
+            eosio::binary_extension<eosio::asset> locked;
+
 
             uint64_t primary_key()const { return supply.symbol.code().raw(); }
          };

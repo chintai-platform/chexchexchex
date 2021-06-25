@@ -137,6 +137,12 @@ void token::lock( name owner, asset quantity, uint8_t days )
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock your tokens for more than 100 days");
   check(days > 0, "You can not lock your tokens for less than 1 day");
+  stats statstable( _self, quantity.symbol.code().raw() );
+  auto existing = statstable.find( quantity.symbol.code().raw() );
+  check( existing != statstable.end(), "Token with symbol " + quantity.symbol.code().to_string() + " does not exist, create token before issue" );
+  statstable.modify(existing, eosio::same_payer, [&](auto & entry){
+      entry.locked += quantity;
+      });
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
       entry.locked += quantity;
@@ -224,6 +230,12 @@ void token::convert_locked_to_balance( name owner )
         {
         entry.locked -= itr->quantity;
         });
+    stats statstable( _self, itr->quantity.symbol.code().raw() );
+    auto existing = statstable.find( itr->quantity.symbol.code().raw() );
+    check( existing != statstable.end(), "Token with symbol " + itr->quantity.symbol.code().to_string() + " does not exist, create token before issue" );
+    statstable.modify(existing, eosio::same_payer, [&](auto & entry){
+        entry.locked -= itr->quantity;
+        });
     itr = unlocking.erase(itr);
   }
 }
@@ -288,6 +300,18 @@ void token::close( name owner, const symbol& symbol )
    check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
    check( it->locked.amount == 0, "Cannot close because the balance is not zero." );
    acnts.erase( it );
+}
+
+void token::setlocked( eosio::asset locked )
+{
+  require_auth(get_self());
+  auto sym = locked.symbol;
+  stats statstable( _self, sym.code().raw() );
+  auto existing = statstable.find( sym.code().raw() );
+  check( existing != statstable.end(), "Token with symbol " + sym.code().to_string() + " does not exist, create token before issue" );
+  statstable.modify( existing, same_payer, [&]( auto& s ) {
+      s.locked = locked;
+      });
 }
 
 } /// namespace eosio
