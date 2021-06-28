@@ -8,6 +8,7 @@
 #include <eosio/eosio.hpp>
 #include <eosio/time.hpp>
 #include <eosio/system.hpp>
+#include <eosio/binary_extension.hpp>
 
 #include <string>
 

@@ -48,6 +48,7 @@ void token::create( name   issuer,
        s.supply.symbol = maximum_supply.symbol;
        s.max_supply    = maximum_supply;
        s.issuer        = issuer;
+       s.locked = eosio::asset(0,maximum_supply.symbol);
     });
 }
 
@@ -141,7 +142,7 @@ void token::lock( name owner, asset quantity, uint8_t days )
   auto existing = statstable.find( quantity.symbol.code().raw() );
   check( existing != statstable.end(), "Token with symbol " + quantity.symbol.code().to_string() + " does not exist, create token before issue" );
   statstable.modify(existing, eosio::same_payer, [&](auto & entry){
-      entry.locked += quantity;
+      entry.locked.value() += quantity;
       });
   from_acnts.modify(acnt_itr, owner, [&](auto & entry)
       {
@@ -234,7 +235,7 @@ void token::convert_locked_to_balance( name owner )
     auto existing = statstable.find( itr->quantity.symbol.code().raw() );
     check( existing != statstable.end(), "Token with symbol " + itr->quantity.symbol.code().to_string() + " does not exist, create token before issue" );
     statstable.modify(existing, eosio::same_payer, [&](auto & entry){
-        entry.locked -= itr->quantity;
+        entry.locked.value() -= itr->quantity;
         });
     itr = unlocking.erase(itr);
   }
