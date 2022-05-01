@@ -109,6 +109,22 @@ void token::transfer( name    from,
     add_balance( to, quantity, payer );
 }
 
+void token::retire( name owner, asset quantity )
+{
+  require_auth(owner);
+  convert_locked_to_balance( owner );
+  accounts from_acnts( _self, owner.value );
+  stats statstable( _self, quantity.symbol.code().raw());
+  check( quantity.amount > 0, "Must burn positive quantity (attmpted to burn quantity amount of " + std::to_string(quantity.amount) );
+  sub_balance( owner, quantity );
+  auto currency = statstable.find(quantity.symbol.code().raw());
+  check(currency != statstable.end(), "Invalid token (" + quantity.symbol.code().to_string() + ")");
+  statstable.modify( currency, same_payer, [&]( auto & entry )
+      {
+        entry.supply -= quantity;
+      });
+}
+
 void token::burn( name owner, asset quantity )
 {
   require_auth(owner);

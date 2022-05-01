@@ -49,6 +49,9 @@ namespace chex{
          void unlock( name owner, asset quantity );
 
          [[eosio::action]]
+         void retire( name owner, asset quantity );
+
+         [[eosio::action]]
          void burn( name owner, asset quantity );
 
          void convert_locked_to_balance( name owner );
