@@ -5,14 +5,14 @@ function unlock_tests()
   local quantity=100.00000000
   local symbol=CHEX
   local precision=8
-  unlock_success &
-  unlock_wrong_authority &
-  unlock_wrong_receiver &
-  unlock_wrong_quantity_amount &
-  unlock_wrong_quantity_symbol &
-  unlock_no_locked_balance &
-  unlock_all_unlocking &
-  unlock_no_balance &
+  unlock_success 
+  unlock_wrong_authority 
+  unlock_wrong_receiver 
+  unlock_wrong_quantity_amount 
+  unlock_wrong_quantity_symbol 
+  unlock_no_locked_balance 
+  unlock_all_unlocking 
+  unlock_no_balance 
 }
 
 function unlock_partially_locked_balance()

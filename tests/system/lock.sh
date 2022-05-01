@@ -5,13 +5,13 @@ function lock_tests()
   local quantity=100.00000000
   local symbol=CHEX
   local precision=8
-  lock_success &
-  lock_wrong_authority &
-  lock_wrong_quantity_amount &
-  lock_wrong_quantity_symbol &
-  lock_wrong_time &
-  lock_low_balance &
-  lock_already_locked &
+  lock_success 
+  lock_wrong_authority 
+  lock_wrong_quantity_amount 
+  lock_wrong_quantity_symbol 
+  lock_wrong_time 
+  lock_low_balance 
+  lock_already_locked 
 }
 
 function lock_no_locked_balance()
@@ -156,8 +156,8 @@ function lock_partially_locked_balance()
 
 function lock_success()
 {
-  lock_no_locked_balance &
-  lock_partially_locked_balance &
+  lock_no_locked_balance 
+  lock_partially_locked_balance 
 }
 
 function lock_wrong_authority()

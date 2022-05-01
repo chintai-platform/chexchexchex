@@ -6,12 +6,12 @@ function burn_tests()
   local max_supply_quantity=1000000000.00000000
   local symbol=CHEX
   local precision=8
-  burn_success &
-  burn_wrong_authority &
-  burn_wrong_quantity_amount &
-  burn_wrong_quantity_symbol &
-  burn_no_balance &
-  burn_when_locked &
+  burn_success 
+  burn_wrong_authority 
+  burn_wrong_quantity_amount 
+  burn_wrong_quantity_symbol 
+  burn_no_balance 
+  burn_when_locked 
 }
 
 function burn_no_locked_balance()

@@ -5,13 +5,13 @@ function transfer_tests()
   local quantity=100.00000000
   local symbol=CHEX
   local precision=8
-  transfer_success &
-  transfer_wrong_authority &
-  transfer_wrong_receiver &
-  transfer_wrong_quantity_amount &
-  transfer_wrong_quantity_symbol &
-  transfer_no_balance &
-  transfer_when_locked &
+  transfer_success 
+  transfer_wrong_authority 
+  transfer_wrong_receiver 
+  transfer_wrong_quantity_amount 
+  transfer_wrong_quantity_symbol 
+  transfer_no_balance 
+  transfer_when_locked 
 }
 
 function transfer_no_locked_balance()

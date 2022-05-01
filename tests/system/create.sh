@@ -5,10 +5,10 @@ function create_tests()
   local quantity=1000000000.00000000
   local symbol=CHEX
   local precision=8
-  create_success &
-  create_wrong_authority &
-  create_token_already_exists &
-  create_wrong_quantity_amount &
+  create_success 
+  create_wrong_authority 
+  create_token_already_exists 
+  create_wrong_quantity_amount 
 }
 
 function create_success()

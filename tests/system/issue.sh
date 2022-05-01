@@ -6,12 +6,12 @@ function issue_tests()
   local symbol=CHEX
   local precision=8
   local max_supply_quantity=1000000000.00000000
-  issue_success &
-  issue_wrong_authority &
-  issue_wrong_receiver &
-  issue_wrong_quantity_amount &
-  issue_wrong_quantity_symbol &
-  issue_max_supply_reached &
+  issue_success 
+  issue_wrong_authority 
+  issue_wrong_receiver 
+  issue_wrong_quantity_amount 
+  issue_wrong_quantity_symbol 
+  issue_max_supply_reached 
 }
 
 function issue_success()
@@ -192,8 +192,8 @@ function issue_wrong_quantity_symbol()
 
 function issue_max_supply_reached()
 {
-  issue_from_zero_to_more_than_max &
-  issue_from_max &
+  issue_from_zero_to_more_than_max 
+  issue_from_max 
 }
 
 function issue_from_zero_to_more_than_max()

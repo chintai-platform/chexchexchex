@@ -5,10 +5,10 @@ function open_tests()
   local quantity=100.00000000
   local symbol=CHEX
   local precision=8
-  open_success &
-  open_wrong_authority &
-  open_wrong_symbol &
-  open_wrong_account &
+  open_success 
+  open_wrong_authority 
+  open_wrong_symbol 
+  open_wrong_account 
 }
 
 function open_success()

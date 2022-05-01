@@ -5,10 +5,10 @@ function close_tests()
   local quantity=100.00000000
   local symbol=CHEX
   local precision=8
-  close_success &
-  close_wrong_authority &
-  close_wrong_symbol &
-  close_already_closed &
+  close_success 
+  close_wrong_authority 
+  close_wrong_symbol 
+  close_already_closed 
 }
 
 function close_success()
