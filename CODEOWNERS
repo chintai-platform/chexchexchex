@@ -1,0 +1,4 @@
+* @chintai-platform/admins
+CODEOWNERS @chintai-platform/admins
+Dockerfile* @chintai-platform/dev-ops
+infra/ @chintai-platform/dev-ops
