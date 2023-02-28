@@ -1,0 +1,4 @@
+* @chintai-platform/smart-contracts
+Dockerfile* @chintai-platform/dev-ops
+infra/ @chintai-platform/dev-ops
+CODEOWNERS @chintai-platform/admins
