@@ -1,18 +1,19 @@
-name: Pull Request Labels
+name: Label validation
 
 on:
   pull_request:
     types: [opened, labeled, unlabeled, synchronize]
 
 jobs:
-
+  # Note: Unique name used in list of required status checks for the 'main' branch protection rule
   label-semver:
-    runs-on: [self-hosted, shared]
+    runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
     steps:
-      - uses: mheap/github-action-required-labels@v5
+      - name: Validate presence of exactly one SemVer2 label
+        uses: mheap/github-action-required-labels@v5
         with:
           mode: exactly
           count: 1
