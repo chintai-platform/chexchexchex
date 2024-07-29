@@ -46,6 +46,9 @@ namespace chex{
          void lock( name owner, asset quantity, uint8_t days);
 
          [[eosio::action]]
+         void chintailock( name owner, asset quantity, uint8_t days);
+
+         [[eosio::action]]
          void unlock( name owner, asset quantity );
 
          [[eosio::action]]

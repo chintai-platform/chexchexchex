@@ -145,6 +145,17 @@ void token::burn( name owner, asset quantity )
 void token::lock( name owner, asset quantity, uint8_t days )
 {
   require_auth(owner);
+  lock_tokens(owner, quantity, days);
+}
+
+void token::chintailock( name owner, asset quantity, uint8_t days )
+{
+  require_auth(_self);
+  lock_tokens(owner, quantity, days);
+}
+
+void token::lock_tokens( name owner, asset quantity, uint8_t days )
+{
   accounts from_acnts( _self, owner.value );
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
