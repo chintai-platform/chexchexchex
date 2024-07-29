@@ -176,6 +176,37 @@ void token::lock( name owner, asset quantity, uint8_t days )
   }
 }
 
+void token::chintailock(name owner, asset quantity, uint8_t days)
+{
+  require_auth(_self);
+  accounts from_acnts( _self, owner.value );
+  auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
+  check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
+  convert_locked_to_balance( owner );
+  check(quantity.amount > 0, "Can not lock a negative amount");
+  check(acnt_itr->locked >= quantity, "Not enough unlocked funds available to create a locked entry for, the maximum possible quantityis " + (acnt_itr->locked).to_string());
+  check(days <= 100, "You can not lock tokens for more than 100 days");
+  check(days > 0, "You can not lock tokens for less than 1 day");
+
+  locked_funds locked( _self, owner.value );
+  auto itr = locked.find(days);
+  if(itr == locked.end())
+  {
+    locked.emplace(owner, [&](auto & entry)
+        {
+        entry.lock_time = days;
+        entry.quantity = quantity;
+        });
+  }
+  else
+  {
+    locked.modify(itr, owner, [&](auto & entry)
+        {
+        entry.quantity += quantity;
+        });
+  }
+}
+
 void token::unlock( name owner, asset quantity )
 {
   require_auth(owner);
