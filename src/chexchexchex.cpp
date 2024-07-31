@@ -194,7 +194,7 @@ void token::chintailock(name owner, asset quantity, uint8_t days)
   {
     itr = locked.erase(itr);
   }
-  locked.emplace(owner, [&](auto & entry)
+  locked.emplace(_self, [&](auto & entry)
       {
       entry.lock_time = days;
       entry.quantity = quantity;
