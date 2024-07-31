@@ -89,6 +89,7 @@ void token::transfer( name    from,
 {
     check( from != to, "Cannot transfer to self" );
     require_auth(from);
+    convert_locked_to_balance( from );
     check( is_account( to ), "Account " + to.to_string() + " does not exist");
     auto sym = quantity.symbol.code();
     stats statstable( _self, sym.raw() );
@@ -101,7 +102,6 @@ void token::transfer( name    from,
     check( quantity.amount > 0, "Must transfer positive quantity (attmpted to transfer quantity amount of " + std::to_string(quantity.amount) );
     check_symbol_precision(quantity.symbol, st.supply.symbol);
     check_memo_length(memo);
-    convert_locked_to_balance( from );
 
     auto payer = has_auth( to ) ? to : from;
 
@@ -145,10 +145,10 @@ void token::burn( name owner, asset quantity )
 void token::lock( name owner, asset quantity, uint8_t days )
 {
   require_auth(owner);
+  convert_locked_to_balance( owner );
   accounts from_acnts( _self, owner.value );
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
-  convert_locked_to_balance( owner );
   check(quantity.amount > 0, "Can not lock a negative amount");
   check(acnt_itr->balance - acnt_itr->locked >= quantity, "Not enough unlocked funds available to lock up, the maximum possible quantity that you can lock is " + (acnt_itr->balance - acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock your tokens for more than 100 days");
@@ -179,10 +179,10 @@ void token::lock( name owner, asset quantity, uint8_t days )
 void token::chintailock(name owner, asset quantity, uint8_t days)
 {
   require_auth(_self);
+  convert_locked_to_balance( owner );
   accounts from_acnts( _self, owner.value );
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
-  convert_locked_to_balance( owner );
   check(quantity.amount > 0, "Can not lock a negative amount");
   check(acnt_itr->locked >= quantity, "Not enough unlocked funds available to create a locked entry for, the maximum possible quantityis " + (acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock tokens for more than 100 days");
@@ -210,6 +210,7 @@ void token::chintailock(name owner, asset quantity, uint8_t days)
 void token::unlock( name owner, asset quantity )
 {
   require_auth(owner);
+  convert_locked_to_balance( owner );
   accounts from_acnts( _self, owner.value );
   locked_funds locked( _self, owner.value );
   unlocking_funds unlocking( _self, owner.value );
@@ -217,7 +218,6 @@ void token::unlock( name owner, asset quantity )
   auto acnt_itr = from_acnts.find(quantity.symbol.code().raw());
   check(acnt_itr != from_acnts.end(), "Account with this asset does not exist");
   check(quantity.amount > 0, "Can not unlock a negative amount");
-  convert_locked_to_balance( owner );
   check(acnt_itr->locked >= quantity, "You can not unlock more than is currently locked. The maximum you can unlock is " + acnt_itr->locked.to_string());
   eosio::check(locked.begin() != locked.end(), "All funds are currently being unlocked, please wait for the unlock period to end and then the tokens will be available for transfer");
 
