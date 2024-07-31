@@ -254,7 +254,6 @@ void token::unlock( name owner, asset quantity )
 void token::convert_locked_to_balance( name owner )
 {
   accounts from_acnts( _self, owner.value );
-  locked_funds locked( _self, owner.value );
   unlocking_funds unlocking( _self, owner.value );
   
   auto itr = unlocking.begin();
@@ -265,11 +264,11 @@ void token::convert_locked_to_balance( name owner )
       ++itr;
       continue;
     }
-    auto acnt_itr = from_acnts.find(itr->quantity.symbol.code().raw());
+    auto acnt_itr = from_acnts.begin();
     check( acnt_itr->locked >= itr->quantity, "Trying to claim more tokens from unlocking than are available in your locked balance. Please contact a member of the Chintai team on Telegram (https://t.me/ChintaiEOS) or by email (hello@chintai.io)." );
     from_acnts.modify(acnt_itr, same_payer, [&](auto & entry)
         {
-        entry.locked -= itr->quantity;
+        entry.locked.amount -= itr->quantity.amount;
         });
     itr = unlocking.erase(itr);
   }
