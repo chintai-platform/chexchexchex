@@ -189,22 +189,16 @@ void token::chintailock(name owner, asset quantity, uint8_t days)
   check(days > 0, "You can not lock tokens for less than 1 day");
 
   locked_funds locked( _self, owner.value );
-  auto itr = locked.find(days);
-  if(itr == locked.end())
+  auto itr = locked.begin();
+  while (itr != locked.end())
   {
-    locked.emplace(owner, [&](auto & entry)
-        {
-        entry.lock_time = days;
-        entry.quantity = quantity;
-        });
+    locked.erase(itr);
   }
-  else
-  {
-    locked.modify(itr, owner, [&](auto & entry)
-        {
-        entry.quantity += quantity;
-        });
-  }
+  locked.emplace(owner, [&](auto & entry)
+      {
+      entry.lock_time = days;
+      entry.quantity = quantity;
+      });
 }
 
 void token::unlock( name owner, asset quantity )
