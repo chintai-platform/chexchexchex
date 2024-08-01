@@ -186,7 +186,7 @@ void token::chintailock(name owner, asset quantity, uint8_t days)
   check(quantity.amount > 0, "Can not lock a negative amount");
   check(acnt_itr->locked >= quantity, "Not enough unlocked funds available to create a locked entry for, the maximum possible quantityis " + (acnt_itr->locked).to_string());
   check(days <= 100, "You can not lock tokens for more than 100 days");
-  check(days > 0, "You can not lock tokens for less than 1 day");
+  check(days >= 0, "You can not lock tokens for less than 0 days");
 
   locked_funds locked( _self, owner.value );
   auto itr = locked.begin();
