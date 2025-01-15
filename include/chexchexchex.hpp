@@ -57,6 +57,9 @@ namespace chex{
          [[eosio::action]]
          void burn( name owner, asset quantity );
 
+         [[eosio::action]]
+         void copyaccounts( name const &owner, symbol const &symbol);
+
          void convert_locked_to_balance( name owner );
 
          static asset get_supply( name token_contract_account, symbol_code sym_code )
@@ -107,6 +110,13 @@ namespace chex{
             uint64_t primary_key()const { return balance.symbol.code().raw(); }
          };
 
+         struct [[eosio::table]] sortedaccnts {
+            asset    balance;
+            uint64_t primary_key()const { return balance.symbol.code().raw(); }
+
+            uint64_t balance_index() const { return balance.amount; }
+         };
+
          struct [[eosio::table]] currency_stats {
             asset    supply;
             asset    max_supply;
@@ -132,6 +142,9 @@ namespace chex{
          typedef eosio::multi_index< "stat"_n, currency_stats > stats;
          typedef eosio::multi_index< "locked"_n, locked_fund > locked_funds;
          typedef eosio::multi_index< "unlocking"_n, unlocking_fund > unlocking_funds;
+         typedef eosio::multi_index< "sortedaccnts"_n, sortedaccnts,
+           eosio::indexed_by< "byamount"_n, eosio::const_mem_fun< sortedaccnts, uint64_t, &sortedaccnts::balance_index
+             > > > sorted_accounts;
 
          void sub_balance( name owner, asset value );
          void add_balance( name owner, asset value, name ram_payer );

@@ -277,29 +277,42 @@ void token::convert_locked_to_balance( name owner )
 
 void token::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
+   sorted_accounts sorted( _self, owner.value );
 
    const auto& from = from_acnts.get( value.symbol.code().raw(), "No balance object found, you do not own any CHEX" );
    check( from.balance.amount >= value.amount, "Overdrawn balance, only " + from.balance.to_string() + " is available" );
    check( from.balance - from.locked >= value, "You are attempting to transfer " + value.to_string() + ", but you can only transfer " + (from.balance - from.locked).to_string() + ", because " + from.locked.to_string() + " are in the locked state. You can unlock them using the \"unlock\" action. You must then wait for the tokens to finish unlocking before attempting this action again." );
+   auto sorted_accounts_entry = sorted.find( value.symbol.code().raw() );
 
    from_acnts.modify( from, owner, [&]( auto& a ) {
          a.balance -= value;
       });
+   sorted.modify( sorted_accounts_entry, owner, [&]( auto& a ) {
+           a.balance -= value;
+       });
 }
 
 void token::add_balance( name owner, asset value, name ram_payer )
 {
    accounts to_acnts( _self, owner.value );
+   sorted_accounts sorted( _self, owner.value );
    auto to = to_acnts.find( value.symbol.code().raw() );
+   auto sorted_accounts_entry = sorted.find( value.symbol.code().raw() );
    if( to == to_acnts.end() ) {
       to_acnts.emplace( ram_payer, [&]( auto& a ){
         a.balance = value;
         a.locked.amount = 0;
         a.locked.symbol = value.symbol;
       });
+      sorted.emplace( ram_payer, [&]( auto& a ){
+          a.balance = value;
+      });
    } else {
       to_acnts.modify( to, same_payer, [&]( auto& a ) {
         a.balance += value;
+      });
+      sorted.modify( sorted_accounts_entry, same_payer, [&]( auto& a ) {
+          a.balance += value;
       });
    }
 }
@@ -337,4 +350,20 @@ void token::close( name owner, const symbol& symbol )
    acnts.erase( it );
 }
 
-} /// namespace eosio
+void token::copyaccounts(name const &owner, symbol const &symbol)
+{
+  require_auth(_self);
+  accounts from_acnts( _self, owner.value );
+  auto from = from_acnts.find( symbol.code().raw() );
+  eosio::check(from != from_acnts.end(), "Account with this asset does not exist");
+
+  sorted_accounts sorted( _self, owner.value );
+  eosio::check(sorted.begin() == sorted.end(), "Account " + owner.to_string() + " already copied");
+
+  sorted.emplace(_self, [&](auto & entry)
+      {
+      entry.balance = from->balance;
+      });
+}
+
+}/// namespace eosio
