@@ -284,6 +284,11 @@ void token::sub_balance( name owner, asset value ) {
    check( from.balance - from.locked >= value, "You are attempting to transfer " + value.to_string() + ", but you can only transfer " + (from.balance - from.locked).to_string() + ", because " + from.locked.to_string() + " are in the locked state. You can unlock them using the \"unlock\" action. You must then wait for the tokens to finish unlocking before attempting this action again." );
    auto sorted_accounts_entry = sorted.find( value.symbol.code().raw() );
 
+   if(sorted_accounts_entry == sorted.end())
+   {
+     copyaccounts(owner, value.symbol);
+   }
+
    from_acnts.modify( from, owner, [&]( auto& a ) {
          a.balance -= value;
       });
@@ -311,6 +316,10 @@ void token::add_balance( name owner, asset value, name ram_payer )
       to_acnts.modify( to, same_payer, [&]( auto& a ) {
         a.balance += value;
       });
+      if(sorted_accounts_entry == sorted.end())
+         {
+           copyaccounts(owner, value.symbol);
+         }
       sorted.modify( sorted_accounts_entry, same_payer, [&]( auto& a ) {
           a.balance += value;
       });
